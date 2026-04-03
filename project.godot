@@ -11,12 +11,17 @@ config_version=5
 [application]
 
 config/name="C:\\GodotGame\\GodotVoxelGame"
-config/features=PackedStringArray("4.6", "Forward Plus")
+run/main_scene="uid://erar5rv2yd7u"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
 project/assembly_name="C--GodotGame-GodotVoxelGame"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/sky_3d/plugin.cfg")
 
 [physics]
 

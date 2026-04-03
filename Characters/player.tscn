@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://djm8ih2gs78mk"]
+
+[ext_resource type="Script" uid="uid://cr34n5fg8v04j" path="res://Characters/Player.cs" id="1_5mj4t"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ywxx0"]
+
+[node name="Player" type="CharacterBody3D" unique_id=664501860]
+script = ExtResource("1_5mj4t")
+
+[node name="Pivot" type="Node3D" parent="." unique_id=2022037023]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=651188313]
+shape = SubResource("CapsuleShape3D_ywxx0")
