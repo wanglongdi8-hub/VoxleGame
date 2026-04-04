@@ -1,5 +1,6 @@
 using Godot;
 
+namespace GodotVoxelGame.VoxleData;
 public class Chunk
 {
     public Vector3I ChunkPosition { get; set; }
