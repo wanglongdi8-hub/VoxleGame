@@ -5,8 +5,11 @@
 [ext_resource type="Script" uid="uid://cdis0bcnxwc85" path="res://Script/VoxelWorld/Managers/MeshGenManager.cs" id="3_c7rf8"]
 [ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="4_c7rf8"]
 
-[node name="VoxleWorld" type="Node3D" unique_id=1811242917]
+[node name="VoxleWorld" type="Node3D" unique_id=1811242917 node_paths=PackedStringArray("ChunkManager", "TerrainManager", "MeshGenManager")]
 script = ExtResource("1_6nr47")
+ChunkManager = NodePath("ChunkManager")
+TerrainManager = NodePath("TerrainManager")
+MeshGenManager = NodePath("MeshGenManager")
 
 [node name="ChunkManager" type="Node3D" parent="." unique_id=75440593]
 script = ExtResource("2_1dk62")

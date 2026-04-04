@@ -1,13 +1,58 @@
 [gd_scene format=3 uid="uid://djm8ih2gs78mk"]
 
-[ext_resource type="Script" uid="uid://cr34n5fg8v04j" path="res://Characters/Player.cs" id="1_5mj4t"]
+[ext_resource type="Script" uid="uid://cr34n5fg8v04j" path="res://Script/Characters/Player.cs" id="1_5mj4t"]
+[ext_resource type="Script" uid="uid://fqhhqpmkkvt7" path="res://Script/Characters/Components/CameraComponent.cs" id="2_l48on"]
+[ext_resource type="Script" uid="uid://mp6q1mrceuea" path="res://Script/Characters/Components/FlyComponent.cs" id="3_4m0gv"]
+[ext_resource type="Script" uid="uid://khaxanfm7t5c" path="res://Script/Characters/Components/AttributeComponent.cs" id="3_p728j"]
+[ext_resource type="Script" uid="uid://3882k5ydo0gr" path="res://Script/Characters/Components/InputComponent.cs" id="4_p728j"]
+[ext_resource type="Script" uid="uid://cplinx1rf4e25" path="res://Script/Characters/Components/MoveComponent.cs" id="5_5slg2"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ywxx0"]
 
-[node name="Player" type="CharacterBody3D" unique_id=664501860]
-script = ExtResource("1_5mj4t")
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4m0gv"]
 
-[node name="Pivot" type="Node3D" parent="." unique_id=2022037023]
+[node name="Player" type="CharacterBody3D" unique_id=664501860 node_paths=PackedStringArray("InputComponent", "MoveComponent", "AttributeComponent", "FlyComponent", "CameraComponent")]
+script = ExtResource("1_5mj4t")
+InputComponent = NodePath("InputComponent")
+MoveComponent = NodePath("MoveComponent")
+AttributeComponent = NodePath("AttributeCompon")
+FlyComponent = NodePath("FlyComponent")
+CameraComponent = NodePath("CamerPivot/SpringArm3D/CameraComponent")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=651188313]
 shape = SubResource("CapsuleShape3D_ywxx0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1968657660]
+mesh = SubResource("CapsuleMesh_4m0gv")
+
+[node name="CamerPivot" type="Node3D" parent="." unique_id=2022037023]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.94808817, 0.9739766, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CamerPivot" unique_id=497423235]
+spring_length = 3.0
+
+[node name="CameraComponent" type="Camera3D" parent="CamerPivot/SpringArm3D" unique_id=1827976651 node_paths=PackedStringArray("CameraPivot", "OwnerPlayer")]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("2_l48on")
+CameraPivot = NodePath("../..")
+OwnerPlayer = NodePath("../../..")
+
+[node name="AttributeCompon" type="Node3D" parent="." unique_id=1004126582 node_paths=PackedStringArray("OwnerPlayer")]
+script = ExtResource("3_p728j")
+OwnerPlayer = NodePath("..")
+
+[node name="FlyComponent" type="Node3D" parent="." unique_id=1814042496 node_paths=PackedStringArray("OwnerPlayer")]
+script = ExtResource("3_4m0gv")
+OwnerPlayer = NodePath("..")
+
+[node name="InputComponent" type="Node3D" parent="." unique_id=1436834896 node_paths=PackedStringArray("OwnerPlayer")]
+script = ExtResource("4_p728j")
+OwnerPlayer = NodePath("..")
+
+[node name="MoveComponent" type="Node3D" parent="." unique_id=2019851447 node_paths=PackedStringArray("Character", "NtcAnimationPlayer", "OwnerPlayer")]
+script = ExtResource("5_5slg2")
+Character = NodePath("..")
+NtcAnimationPlayer = NodePath("../AnimationPlayer")
+OwnerPlayer = NodePath("..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=530120328]

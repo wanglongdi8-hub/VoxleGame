@@ -1,7 +1,8 @@
 using Godot;
 using System;
+using System.Threading.Tasks;
 
-[Tool]public partial class VoxelWorld : Node
+public partial class VoxelWorld : Node
 {
 	[ExportGroup("组件引用")]
     [Export]public Node3D PlayerPivot{get; set;}
@@ -31,9 +32,13 @@ using System;
     [ExportGroup("调试选项")] 
     [Export]public Vector3I 玩家所在区块{get; set;}
 	[Export]public Vector3I 上一次玩家所在区块{get;set;}
+
+    private bool 是否为初次加载 = true;
     
-	/*****************   事件   **********************/
-	public event Action<Vector3I> 玩家移动到新区块;
+	/*****************        事件         **********************/
+	public event Func<object, Vector3I, Task> 玩家移动到新区块;
+
+    /*****************        事件         **********************/
 
     public override void _Ready()
     {
@@ -57,8 +62,13 @@ using System;
 			);
 			if(上一次玩家所在区块 != 玩家所在区块)
 			{
-				玩家移动到新区块?.Invoke(玩家所在区块);
+				玩家移动到新区块?.Invoke(this,玩家所在区块);
 			}
+            if(是否为初次加载)
+            {
+                玩家移动到新区块?.Invoke(this, 玩家所在区块);
+                是否为初次加载 = false;
+            }
 			上一次玩家所在区块 = 玩家所在区块;
 
 		}
@@ -66,7 +76,7 @@ using System;
 		{
 			玩家所在区块 = new(0,0,0);
 			上一次玩家所在区块 = 玩家所在区块;
-			玩家移动到新区块?.Invoke(玩家所在区块);
+			玩家移动到新区块?.Invoke(this, 玩家所在区块);
 		}
     }
 }

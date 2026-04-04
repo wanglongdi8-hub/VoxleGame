@@ -1,16 +1,13 @@
 using Godot;
 using System;
 
-[Tool]public partial class MainGame : Node3D
+public partial class AttributeComponent : Node3D
 {
-
+	[Export]public Player OwnerPlayer { get; set; }
 	public override void _Ready()
 	{
-
 	}
-
 	public override void _Process(double delta)
 	{
-
 	}
 }
