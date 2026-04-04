@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dy5riq6n2ec5b"]
+
+[ext_resource type="Script" uid="uid://dmhrk7wuw6psw" path="res://Script/VoxelWorld/VoxelWorld.cs" id="1_6nr47"]
+[ext_resource type="Script" uid="uid://dfe7xpud8b0cn" path="res://Script/VoxelWorld/Managers/ChunkManager.cs" id="2_1dk62"]
+[ext_resource type="Script" uid="uid://cdis0bcnxwc85" path="res://Script/VoxelWorld/Managers/MeshGenManager.cs" id="3_c7rf8"]
+[ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="4_c7rf8"]
+
+[node name="VoxleWorld" type="Node3D" unique_id=1811242917]
+script = ExtResource("1_6nr47")
+
+[node name="ChunkManager" type="Node3D" parent="." unique_id=75440593]
+script = ExtResource("2_1dk62")
+
+[node name="MeshGenManager" type="MeshInstance3D" parent="." unique_id=283480079]
+script = ExtResource("3_c7rf8")
+
+[node name="TerrainManager" type="Node3D" parent="." unique_id=1129591728]
+script = ExtResource("4_c7rf8")
