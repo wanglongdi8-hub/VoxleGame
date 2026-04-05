@@ -1,10 +1,11 @@
 using Godot;
 using System;
 
+[GlobalClass]
 public partial class GUIViewConfig : Resource
 {
-    [Export] StringName Id { get; set; }
-    [Export] PackedScene Prefab { get; set; }
+    [Export] public StringName Id { get; set; }
+    [Export] public PackedScene Prefab { get; set; }
 
     
 }

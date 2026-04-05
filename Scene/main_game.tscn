@@ -31,11 +31,8 @@ shadow_enabled = true
 [node name="VoxleWorld" parent="." unique_id=1811242917 node_paths=PackedStringArray("PlayerPivot") instance=ExtResource("2_vh4eo")]
 PlayerPivot = NodePath("../Player/Pivot")
 "视距" = 2
-"玩家所在区块" = Vector3i(1, 2, 4)
-"上一次玩家所在区块" = Vector3i(1, 2, 4)
 
 [node name="Player" parent="." unique_id=664501860 instance=ExtResource("3_htkpn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.816597, 72.63877, 136.27982)
 "飞行速度" = 80.0
 
 [node name="Pivot" type="Node3D" parent="Player" unique_id=240906339]
