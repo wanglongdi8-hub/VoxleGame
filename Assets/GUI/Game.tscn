@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://beggfo46hgu62" path="res://Script/Core/GUI/GUIViewConfig.cs" id="2_ou18a"]
 [ext_resource type="PackedScene" uid="uid://sv0tjp3sj0bo" path="res://Assets/GUI/StartMenu/StartMenu.tscn" id="3_mopgc"]
 [ext_resource type="Script" uid="uid://df3ttewa28egu" path="res://Script/Core/LaunchGame.cs" id="3_ou18a"]
+[ext_resource type="PackedScene" uid="uid://g522bcp5vjm0" path="res://Assets/GUI/SettingsMenu/SettingsMenu.tscn" id="4_ivtx6"]
 
 [sub_resource type="Resource" id="Resource_nrfn4"]
 script = ExtResource("2_ou18a")
@@ -11,12 +12,18 @@ Id = &"StartMenu"
 Prefab = ExtResource("3_mopgc")
 metadata/_custom_type_script = "uid://beggfo46hgu62"
 
+[sub_resource type="Resource" id="Resource_mopgc"]
+script = ExtResource("2_ou18a")
+Id = &"SettingsMenu"
+Prefab = ExtResource("4_ivtx6")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
+
 [node name="Game" type="Node" unique_id=1325001952]
 
 [node name="GUIViewManager" type="Node" parent="." unique_id=347145804 node_paths=PackedStringArray("GuiRoot")]
 unique_name_in_owner = true
 script = ExtResource("1_u6khg")
-ViewConfigList = Array[ExtResource("2_ou18a")]([SubResource("Resource_nrfn4")])
+ViewConfigList = Array[ExtResource("2_ou18a")]([SubResource("Resource_nrfn4"), SubResource("Resource_mopgc")])
 GuiRoot = NodePath("../GUIRoot")
 
 [node name="GUIRoot" type="Control" parent="." unique_id=1141073051]

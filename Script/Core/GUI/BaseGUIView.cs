@@ -28,4 +28,9 @@ public partial class BaseGUIView : Node
 		Close();
 	}
 
+	protected void CloseSelf()
+	{
+		G.Instance.GetGUIViewManager().CloseView(viewinstanceId);
+	}
+
 }

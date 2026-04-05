@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://g522bcp5vjm0"]
+
+[ext_resource type="Script" uid="uid://chgjfyu3nylmr" path="res://Script/GUI/SettingsMenu/SettingsMenu.cs" id="1_r0wpm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r0wpm"]
+bg_color = Color(0.31688753, 0.32255316, 0.28745478, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_r0wpm"]
+font_size = 72
+
+[node name="SettingsMenu" type="Control" unique_id=518427533]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r0wpm")
+
+[node name="Panel" type="Panel" parent="." unique_id=1667177887]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_r0wpm")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=99590873]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -42.0
+offset_right = 32.0
+offset_bottom = 42.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1593156147]
+layout_mode = 2
+text = "设置菜单
+"
+label_settings = SubResource("LabelSettings_r0wpm")
+
+[node name="BackButton" type="Button" parent="VBoxContainer" unique_id=408333018]
+layout_mode = 2
+text = "返回
+"
+
+[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="OnBackButtonPressed"]

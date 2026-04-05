@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://erar5rv2yd7u"]
 
 [ext_resource type="Script" uid="uid://dtrrkx7wtdp5u" path="res://Script/MainGame.cs" id="1_jv8gs"]
-[ext_resource type="PackedScene" uid="uid://dy5riq6n2ec5b" path="res://Scene/voxle_world.tscn" id="2_vh4eo"]
-[ext_resource type="PackedScene" uid="uid://djm8ih2gs78mk" path="res://Characters/player.tscn" id="3_htkpn"]
-[ext_resource type="PackedScene" uid="uid://2psjwwk6lrda" path="res://Scene/node_3d.tscn" id="14_wksce"]
+[ext_resource type="PackedScene" uid="uid://dy5riq6n2ec5b" path="res://Assets/Scene/voxle_world.tscn" id="2_vh4eo"]
+[ext_resource type="PackedScene" uid="uid://djm8ih2gs78mk" path="res://Assets/Characters/player.tscn" id="3_htkpn"]
+[ext_resource type="PackedScene" uid="uid://2psjwwk6lrda" path="res://Assets/Scene/node_3d.tscn" id="14_wksce"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1btii"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -33,6 +33,7 @@ PlayerPivot = NodePath("../Player/Pivot")
 "视距" = 2
 
 [node name="Player" parent="." unique_id=664501860 instance=ExtResource("3_htkpn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8006067, 0)
 "飞行速度" = 80.0
 
 [node name="Pivot" type="Node3D" parent="Player" unique_id=240906339]
