@@ -15,6 +15,10 @@ run/main_scene="uid://erar5rv2yd7u"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+G="*uid://vcvmig7qojf7"
+
 [dotnet]
 
 project/assembly_name="C--GodotGame-GodotVoxelGame"
