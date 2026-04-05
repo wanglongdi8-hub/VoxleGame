@@ -6,7 +6,12 @@ public class Chunk
     public Vector3I ChunkPosition { get; set; }
     
     private ushort[] _voxels = new ushort[VoxelConst.CHUNK_VOLUME];
-    
+
+    public Chunk(Vector3I 区块坐标)
+    {
+        ChunkPosition = 区块坐标;
+    }
+
     public ushort GetVoxel(int x, int y, int z)
     {
         int index = Utils.ToFlatIndex(x, y, z, VoxelConst.CHUNK_SIZE_Y, VoxelConst.CHUNK_SIZE_X);

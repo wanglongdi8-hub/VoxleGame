@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bmv5aoidw2ps2"]
+
+[ext_resource type="Script" uid="uid://3cigschqwo5s" path="res://Script/Core/GUI/GUIViewManager.cs" id="1_hpsar"]
+[ext_resource type="Script" uid="uid://beggfo46hgu62" path="res://Script/Core/GUI/GUIViewConfig.cs" id="2_nrfn4"]
+
+[node name="Node" type="Node" unique_id=1325001952]
+
+[node name="GUIViewManager" type="Node" parent="." unique_id=347145804 node_paths=PackedStringArray("GuiRoot")]
+script = ExtResource("1_hpsar")
+ViewConfigList = Array[ExtResource("2_nrfn4")]([null])
+GuiRoot = NodePath("../GUIRoot")
+
+[node name="GUIRoot" type="Control" parent="." unique_id=1141073051]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

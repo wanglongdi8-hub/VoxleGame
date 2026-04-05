@@ -48,7 +48,7 @@ class 区块顶点数据
     public List<Vector3> normal { get; set; } = [];
     public List<int> indice { get; set; } = [];
 }
-public partial class MeshGenManager : MeshInstance3D
+[Tool]public partial class MeshGenManager : MeshInstance3D
 {
 	[Export] public StandardMaterial3D BlockMaterial { get; set; }
 	[Export] public VoxelCollisionComponent 碰撞组件 { get; set; }

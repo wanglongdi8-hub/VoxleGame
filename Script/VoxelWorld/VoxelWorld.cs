@@ -2,13 +2,15 @@ using Godot;
 using System;
 using System.Threading.Tasks;
 
-public partial class VoxelWorld : Node
+[Tool]public partial class VoxelWorld : Node
 {
 	[ExportGroup("组件引用")]
     [Export]public Node3D PlayerPivot{get; set;}
-    [Export]public ChunkManager ChunkManager{get; set;}
-    [Export]public TerrainManager TerrainManager{get; set;}
-    [Export]public MeshGenManager MeshGenManager{get; set;}
+    
+    // 运行时获取的组件引用
+    [Export]public ChunkManager ChunkManager{get; private set;}
+    [Export]public TerrainManager TerrainManager{get; private set;}
+    [Export]public MeshGenManager MeshGenManager{get; private set;}
     
     [ExportGroup("区块管理器")] 
     [Export]public Vector3I 区块加载范围{get; set;} = new (1, 1, 1);
@@ -42,7 +44,10 @@ public partial class VoxelWorld : Node
 
     public override void _Ready()
     {
-       
+        // 在运行时获取组件引用
+        ChunkManager = GetNode<ChunkManager>("ChunkManager");
+        TerrainManager = GetNode<TerrainManager>("TerrainManager");
+        MeshGenManager = GetNode<MeshGenManager>("MeshGenManager");
        
     }
 

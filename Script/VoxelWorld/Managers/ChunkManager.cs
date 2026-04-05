@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-public partial class ChunkManager : Node
+[Tool]public partial class ChunkManager : Node
 {
     public HashSet<Vector2I> 视距内地形 = [];
     private HashSet<Vector2I> 新视距内地形 = [];

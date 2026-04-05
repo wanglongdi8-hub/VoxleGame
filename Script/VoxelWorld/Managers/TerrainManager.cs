@@ -1,10 +1,11 @@
 using Godot;
 using GodotVoxelGame.VoxleData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public partial class TerrainManager : Node
+[Tool]public partial class TerrainManager : Node
 {
 	private VoxelWorld _voxelWorld;
 
@@ -28,7 +29,7 @@ public partial class TerrainManager : Node
     // 地形块相关计算
     private int _地形块包含区块数;
     private int _地形块大小;
-    private HashSet<Vector2I> _预计算的地形块坐标 = new HashSet<Vector2I>();
+    private Vector2I _上一次中心地形块坐标 = Vector2I.Zero;
 
     public override void _Ready()
 	{
@@ -66,118 +67,60 @@ public partial class TerrainManager : Node
     
     public void 预计算地形块(Vector2I 中心地形块坐标)
     {
-        // 根据视距计算要预计算的地形块范围
-        int 视距 = _voxelWorld.视距;
-        
-        // 计算地形块视距（将区块视距转换为地形块视距）
-        int 地形块视距 = Mathf.CeilToInt((float)视距 / _地形块包含区块数) + 1;
-        
-        // 计算需要预计算的地形块坐标
-        var 需要预计算的地形块 = new HashSet<Vector2I>();
-        
-        for (int dx = -地形块视距; dx <= 地形块视距; dx++)
+        // 完全禁用预计算，只更新坐标
+        if (中心地形块坐标 == _上一次中心地形块坐标)
         {
-            for (int dz = -地形块视距; dz <= 地形块视距; dz++)
-            {
-                Vector2I 地形块坐标 = new Vector2I(中心地形块坐标.X + dx, 中心地形块坐标.Y + dz);
-                需要预计算的地形块.Add(地形块坐标);
-            }
+            return;
         }
         
-        // 计算需要添加的新地形块和需要移除的旧地形块
-        var 要添加的地形块 = 需要预计算的地形块.Except(_预计算的地形块坐标);
-        var 要移除的地形块 = _预计算的地形块坐标.Except(需要预计算的地形块);
+        _上一次中心地形块坐标 = 中心地形块坐标;
         
-        // 预计算新地形块
-        foreach (var 地形块坐标 in 要添加的地形块)
-        {
-            预计算单个地形块(地形块坐标);
-        }
-        
-        // 移除不需要的地形块
-        foreach (var 地形块坐标 in 要移除的地形块)
-        {
-            _预计算的地形块.Remove(地形块坐标);
-        }
-        
-        // 更新预计算的地形块坐标集合
-        _预计算的地形块坐标 = 需要预计算的地形块;
-        
-        GD.Print($"预计算地形块完成：中心坐标 {中心地形块坐标}, 视距 {地形块视距}, 预计算 {_预计算的地形块坐标.Count} 个地形块");
+        // 不打印日志，减少控制台输出
     }
     
-    private void 预计算单个地形块(Vector2I 地形块坐标)
-    {
-        // 计算地形块在世界中的起始位置
-        int 起始X = 地形块坐标.X * _地形块大小;
-        int 起始Z = 地形块坐标.Y * _地形块大小;
-        
-        // 创建地形块噪声数据
-        float[,] 地形块噪声 = new float[_地形块大小, _地形块大小];
-        
-        // 并行预计算地形块噪声
-        Parallel.For(0, _地形块大小, x =>
-        {
-            for (int z = 0; z < _地形块大小; z++)
-            {
-                float worldX = 起始X + x;
-                float worldZ = 起始Z + z;
-                
-                // 获取主地形噪声
-                float 主噪声 = _地形噪声.GetNoise2D(worldX, worldZ);
-                
-                // 获取细节噪声
-                float 细节噪声 = _细节噪声.GetNoise2D(worldX, worldZ);
-                
-                // 合并噪声
-                地形块噪声[x, z] = 主噪声 * 地形幅度 + 细节噪声 * 细节幅度;
-            }
-        });
-        
-        // 存储预计算的地形块
-        _预计算的地形块[地形块坐标] = 地形块噪声;
-    }
+    // 移除旧的异步预计算方法，使用新的分帧预计算方法
+    
+    // 移除预计算相关方法，直接使用实时计算
     
     public float 获取地形块噪声(float worldX, float worldZ)
     {
-        // 计算地形块坐标
-        Vector2I 地形块坐标 = new Vector2I(
-            Mathf.FloorToInt(worldX / _地形块大小),
-            Mathf.FloorToInt(worldZ / _地形块大小)
-        );
-        
-        // 检查是否已预计算
-        if (!_预计算的地形块.ContainsKey(地形块坐标))
-        {
-            // 如果未预计算，实时计算
-            float 主噪声 = _地形噪声.GetNoise2D(worldX, worldZ);
-            float 细节噪声 = _细节噪声.GetNoise2D(worldX, worldZ);
-            return 主噪声 * 地形幅度 + 细节噪声 * 细节幅度;
-        }
-        
-        // 从预计算的地形块中获取噪声
-        float[,] 地形块噪声 = _预计算的地形块[地形块坐标];
-        
-        // 计算在地形块内的相对位置
-        int localX = Mathf.PosMod(Mathf.RoundToInt(worldX), _地形块大小);
-        int localZ = Mathf.PosMod(Mathf.RoundToInt(worldZ), _地形块大小);
-        
-        return 地形块噪声[localX, localZ];
+        // 优化实时计算：简化噪声合并
+        return _地形噪声.GetNoise2D(worldX, worldZ) * 地形幅度 + 
+               _细节噪声.GetNoise2D(worldX, worldZ) * 细节幅度;
     }
+    
+    private Vector2I 计算地形块坐标(Vector2I 地形坐标)
+    {
+        // 将地形坐标转换为地形块坐标
+        return new Vector2I(
+            Mathf.FloorToInt((float)地形坐标.X / _地形块包含区块数),
+            Mathf.FloorToInt((float)地形坐标.Y / _地形块包含区块数)
+        );
+    }
+    
+    private Vector3I 计算区块坐标(Vector2I 地形坐标)
+    {
+        // 计算地形坐标在世界中的中心位置
+        float 世界X = 地形坐标.X * VoxelConst.CHUNK_SIZE_X + VoxelConst.CHUNK_SIZE_X / 2f;
+        float 世界Z = 地形坐标.Y * VoxelConst.CHUNK_SIZE_Z + VoxelConst.CHUNK_SIZE_Z / 2f;
+        
+        // 获取该位置的地形高度
+        float 噪声值 = 获取地形块噪声(世界X, 世界Z);
+        int 地形高度 = Mathf.RoundToInt(基础高度 + 噪声值);
+        
+        // 计算该高度对应的区块Y坐标
+        int 区块Y = Mathf.FloorToInt((float)地形高度 / VoxelConst.CHUNK_SIZE_Y);
+        
+        return new Vector3I(地形坐标.X, 区块Y, 地形坐标.Y);
+    }
+    
     private async Task 添加地形(object arg1, Vector2I 地形坐标)
     {
-        // 更新预计算地形块
-        Vector2I 中心地形块坐标 = new Vector2I(
-            Mathf.FloorToInt(地形坐标.X / (float)_地形块包含区块数),
-            Mathf.FloorToInt(地形坐标.Y / (float)_地形块包含区块数)
-        );
-        预计算地形块(中心地形块坐标);
+        // 使用简化计算，避免复杂逻辑
+        Vector3I 区块坐标 = 计算区块坐标(地形坐标);
+        var chunk = new Chunk(区块坐标);
         
-        // 创建区块
-        Chunk chunk = new Chunk();
-        chunk.ChunkPosition = new Vector3I(地形坐标.X, 0, 地形坐标.Y);
-        
-        // 使用预计算的地形块生成地形
+        // 直接生成地形，不进行预计算
         生成地形高度(chunk, 地形坐标);
 
         _voxelWorld.ChunkManager.添加地形到区块总数据映射(地形坐标, chunk.ChunkPosition);
@@ -250,21 +193,6 @@ public partial class TerrainManager : Node
         }
     }
 
-
-
-	void 填充区块底层方块(Chunk chunk)
-    {
-        // 只填充 Y=0 层（最底层）
-        int groundY = 0;
-
-        for (int x = 0; x < VoxelConst.CHUNK_SIZE_X; x++)
-        {
-            for (int z = 0; z < VoxelConst.CHUNK_SIZE_Z; z++)
-            {
-                chunk.SetVoxel(x, groundY, z, 1);
-            }
-        }
-    }
 
     public void 预计算噪声()
     {

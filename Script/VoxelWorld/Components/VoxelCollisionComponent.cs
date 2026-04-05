@@ -2,7 +2,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class VoxelCollisionComponent : Node
+[Tool]public partial class VoxelCollisionComponent : Node
 {
     [Export] public bool 启用碰撞 = true;
     [Export] public uint CollisionLayer = 1;
