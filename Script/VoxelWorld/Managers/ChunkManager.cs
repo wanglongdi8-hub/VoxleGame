@@ -19,6 +19,9 @@ public partial class ChunkManager : Node
     public event Func<object, Vector2I, Task> 新地形被添加;
     public event Func<object, Vector2I, Task> 地形被删除;
 
+    public event Func<object, Chunk, Task> 区块被添加_chunkDict;
+    public event Func<object, Vector3I, Task> 区块被移除_chunkDict;
+
     /*****************        事件         **********************/
 
     public override void _Ready()
@@ -30,7 +33,7 @@ public partial class ChunkManager : Node
 
     public override void _Process(double delta)
     {
-        // 可以留空或添加其他逻辑
+        
     }
     
     private async Task 响应更新视距内区块(object arg1, Vector3I inPos)
@@ -117,13 +120,13 @@ public partial class ChunkManager : Node
     public void AddChunk(Chunk chunk)
     {
         _chunkDict.TryAdd(chunk.ChunkPosition, chunk);
-        GD.Print($"Addchunk: {chunk.ChunkPosition}");
+       区块被添加_chunkDict?.Invoke(this, chunk);
     }
 
     private void RemoveChunk(Vector3I chunkPos)
     {
         _chunkDict.Remove(chunkPos);
-        GD.Print($"Removechunk: {chunkPos}");
+        区块被移除_chunkDict?.Invoke(this, chunkPos);
     }
     
 }
