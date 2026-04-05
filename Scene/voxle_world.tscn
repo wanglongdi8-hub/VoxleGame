@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dfe7xpud8b0cn" path="res://Script/VoxelWorld/Managers/ChunkManager.cs" id="2_1dk62"]
 [ext_resource type="Script" uid="uid://cdis0bcnxwc85" path="res://Script/VoxelWorld/Managers/MeshGenManager.cs" id="3_c7rf8"]
 [ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="4_c7rf8"]
+[ext_resource type="Script" uid="uid://betl6212mggqh" path="res://Script/VoxelWorld/Components/VoxelCollisionComponent.cs" id="5_kh5t6"]
 
 [node name="VoxleWorld" type="Node3D" unique_id=1811242917 node_paths=PackedStringArray("ChunkManager", "TerrainManager", "MeshGenManager")]
 script = ExtResource("1_6nr47")
@@ -14,8 +15,12 @@ MeshGenManager = NodePath("MeshGenManager")
 [node name="ChunkManager" type="Node3D" parent="." unique_id=75440593]
 script = ExtResource("2_1dk62")
 
-[node name="MeshGenManager" type="MeshInstance3D" parent="." unique_id=283480079]
+[node name="MeshGenManager" type="MeshInstance3D" parent="." unique_id=283480079 node_paths=PackedStringArray("碰撞组件")]
 script = ExtResource("3_c7rf8")
+"碰撞组件" = NodePath("VoxelCollisionComponent")
+
+[node name="VoxelCollisionComponent" type="Node3D" parent="MeshGenManager" unique_id=9048055]
+script = ExtResource("5_kh5t6")
 
 [node name="TerrainManager" type="Node3D" parent="." unique_id=1129591728]
 script = ExtResource("4_c7rf8")

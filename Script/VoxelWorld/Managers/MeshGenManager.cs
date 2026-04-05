@@ -51,6 +51,7 @@ class 区块顶点数据
 public partial class MeshGenManager : MeshInstance3D
 {
 	[Export] public StandardMaterial3D BlockMaterial { get; set; }
+	[Export] public VoxelCollisionComponent 碰撞组件 { get; set; }
     
     private VoxelWorld _voxelWorld;
     
@@ -66,7 +67,9 @@ public partial class MeshGenManager : MeshInstance3D
         _voxelWorld = GetParent<VoxelWorld>();
         _voxelWorld.ChunkManager.区块被添加_chunkDict += 添加区块;
         _voxelWorld.ChunkManager.区块被移除_chunkDict += 移除区块;
+
     }
+
 
     private async Task 移除区块(object arg1, Vector3I chunkPosition)
     {
@@ -151,6 +154,18 @@ public partial class MeshGenManager : MeshInstance3D
         arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
         MaterialOverride = BlockMaterial;
         Mesh = arrMesh;
+
+		/*
+		// 更新碰撞形状
+        if (碰撞组件 != null && combinedData.vert.Count > 0)
+        {
+            bool 成功 = 碰撞组件.更新碰撞形状(combinedData);
+            if (!成功)
+            {
+                GD.Print("[MeshGenManager] 碰撞更新失败，网格顶点数: " + combinedData.vert.Count);
+            }
+        }
+		*/
     }
 
     private 区块顶点数据 合并所有区块数据()
@@ -173,6 +188,12 @@ public partial class MeshGenManager : MeshInstance3D
         
         ArrayMesh arrMesh = new ArrayMesh();
         Mesh = arrMesh;
+
+		 // 清除碰撞形状
+        if (碰撞组件 != null)
+        {
+            碰撞组件.清除碰撞形状();
+        }
     }
 
 
@@ -355,4 +376,53 @@ public partial class MeshGenManager : MeshInstance3D
         new(0, 0, 1),  // 前
         new(0, 0, -1)  // 后
     };
+
+	private void 碰撞更新完成回调(bool 成功, int 三角形数量, ulong 耗时, string 碰撞类型)
+    {
+        if (成功)
+        {
+            GD.Print($"[MeshGenManager] 碰撞更新成功: {三角形数量} 三角形, 耗时 {耗时}ms");
+        }
+        else
+        {
+            GD.PrintErr("[MeshGenManager] 碰撞更新失败");
+        }
+    }
+
+	/// <summary>
+    /// 手动更新碰撞
+    /// </summary>
+    public void 强制更新碰撞()
+    {
+        if (碰撞组件 == null) return;
+        
+        区块顶点数据 combinedData = 合并所有区块数据();
+        if (combinedData.vert.Count > 0)
+        {
+            碰撞组件.更新碰撞形状(combinedData);
+        }
+    }
+    
+    /// <summary>
+    /// 设置碰撞启用状态
+    /// </summary>
+    public void 设置碰撞启用(bool enabled)
+    {
+        if (碰撞组件 != null)
+        {
+            碰撞组件.启用(enabled);
+        }
+    }
+    
+    /// <summary>
+    /// 获取碰撞统计信息
+    /// </summary>
+    public string 获取碰撞统计信息()
+    {
+        if (碰撞组件 != null)
+        {
+            return 碰撞组件.获取统计信息();
+        }
+        return "碰撞组件未初始化";
+    }
 }

@@ -13,6 +13,7 @@ public partial class ChunkManager : Node
     private Vector2I 当前中心区块 = Vector2I.Zero;
     private int 当前视距 = 1;
     private Dictionary<Vector3I, Chunk> _chunkDict = [];
+    private Dictionary<Vector2I,Vector3I> _地形到区块总数据映射 = [];
     private VoxelWorld _voxelWorld;
 
     /*****************        事件         **********************/
@@ -28,8 +29,11 @@ public partial class ChunkManager : Node
     {
         _voxelWorld = GetParent<VoxelWorld>();
         _voxelWorld.玩家移动到新区块 += 响应更新视距内区块;
-        
+        地形被删除+= 响应删除地形;
     }
+
+    
+
 
     public override void _Process(double delta)
     {
@@ -61,7 +65,6 @@ public partial class ChunkManager : Node
         {
             try
             {
-                // 修复：正确的空条件调用方式
                 if (地形被删除 != null)
                 {
                     await 地形被删除.Invoke(this, 区块);
@@ -78,7 +81,6 @@ public partial class ChunkManager : Node
         {
             try
             {
-                // 修复：正确的空条件调用方式
                 if (新地形被添加 != null)
                 {
                     await 新地形被添加.Invoke(this, 区块);
@@ -93,13 +95,7 @@ public partial class ChunkManager : Node
         // 更新内部状态
         当前视距 = _voxelWorld.视距;
         视距内地形 = 新视距内区块;
-        
-        // 打印当前视距内的区块
-        GD.Print($"当前视距内区块({当前视距}):");
-        foreach (var 区块 in 视距内地形.OrderBy(c => c.X).ThenBy(c => c.Y))
-        {
-            GD.Print($"  ({区块.X}, {区块.Y})");
-        }
+    
     }
 
     private HashSet<Vector2I> 计算正方形视距内区块(Vector2I 中心, int 视距)
@@ -120,13 +116,33 @@ public partial class ChunkManager : Node
     public void AddChunk(Chunk chunk)
     {
         _chunkDict.TryAdd(chunk.ChunkPosition, chunk);
-       区块被添加_chunkDict?.Invoke(this, chunk);
+        区块被添加_chunkDict?.Invoke(this, chunk);
     }
 
     private void RemoveChunk(Vector3I chunkPos)
     {
         _chunkDict.Remove(chunkPos);
         区块被移除_chunkDict?.Invoke(this, chunkPos);
+    }
+
+    public void 添加地形到区块总数据映射(Vector2I 地形坐标, Vector3I 区块坐标)
+    {
+        _地形到区块总数据映射.TryAdd(地形坐标, 区块坐标);
+    }
+
+    public void 从区块总数据映射移除地形(Vector2I 地形坐标)
+    {
+        _地形到区块总数据映射.Remove(地形坐标);
+    }  
+
+    private async Task 响应删除地形(object arg1, Vector2I i)
+    {
+        if (_地形到区块总数据映射.TryGetValue(i, out var chunkPos))
+        {
+            RemoveChunk(chunkPos);
+        }
+        从区块总数据映射移除地形(i);
+
     }
     
 }
