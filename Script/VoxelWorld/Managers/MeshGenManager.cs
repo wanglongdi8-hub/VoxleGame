@@ -4,50 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-class 区块顶点数据
-{
-    public 区块顶点数据()
-    {
-        vert = [];
-        uv = [];
-        normal = [];
-        indice = [];
-    }
-    public 区块顶点数据(List<Vector3> verts, List<Vector2> uvs, List<Vector3> normals, List<int> indices)
-    {
-        vert = verts;
-        uv = uvs;
-        normal = normals;
-        indice = indices;
-    }
 
-    public void AddRange(区块顶点数据 a)
-    {
-        int vertexOffset = vert.Count;
-        vert.AddRange(a.vert);
-        uv.AddRange(a.uv);
-        normal.AddRange(a.normal);
-        
-        // 调整索引，加上当前的顶点偏移
-        foreach (var index in a.indice)
-        {
-            indice.Add(index + vertexOffset);
-        }
-    }
-
-    public void Clear()
-    {
-        vert.Clear();
-        uv.Clear();
-        normal.Clear();
-        indice.Clear();
-    }
-
-    public List<Vector3> vert { get; set; } = [];
-    public List<Vector2> uv { get; set; } = [];
-    public List<Vector3> normal { get; set; } = [];
-    public List<int> indice { get; set; } = [];
-}
 [Tool]public partial class MeshGenManager : MeshInstance3D
 {
 	[Export] public StandardMaterial3D BlockMaterial { get; set; }
@@ -65,8 +22,6 @@ class 区块顶点数据
     public override void _Ready()
     {
         _voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.ChunkManager.区块被添加_chunkDict += 添加区块;
-        _voxelWorld.ChunkManager.区块被移除_chunkDict += 移除区块;
 
     }
 
@@ -377,52 +332,5 @@ class 区块顶点数据
         new(0, 0, -1)  // 后
     };
 
-	private void 碰撞更新完成回调(bool 成功, int 三角形数量, ulong 耗时, string 碰撞类型)
-    {
-        if (成功)
-        {
-            GD.Print($"[MeshGenManager] 碰撞更新成功: {三角形数量} 三角形, 耗时 {耗时}ms");
-        }
-        else
-        {
-            GD.PrintErr("[MeshGenManager] 碰撞更新失败");
-        }
-    }
 
-	/// <summary>
-    /// 手动更新碰撞
-    /// </summary>
-    public void 强制更新碰撞()
-    {
-        if (碰撞组件 == null) return;
-        
-        区块顶点数据 combinedData = 合并所有区块数据();
-        if (combinedData.vert.Count > 0)
-        {
-            碰撞组件.更新碰撞形状(combinedData);
-        }
-    }
-    
-    /// <summary>
-    /// 设置碰撞启用状态
-    /// </summary>
-    public void 设置碰撞启用(bool enabled)
-    {
-        if (碰撞组件 != null)
-        {
-            碰撞组件.启用(enabled);
-        }
-    }
-    
-    /// <summary>
-    /// 获取碰撞统计信息
-    /// </summary>
-    public string 获取碰撞统计信息()
-    {
-        if (碰撞组件 != null)
-        {
-            return 碰撞组件.获取统计信息();
-        }
-        return "碰撞组件未初始化";
-    }
 }

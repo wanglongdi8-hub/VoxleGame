@@ -38,7 +38,7 @@ using System.Threading.Tasks;
     private bool 是否为初次加载 = true;
     
 	/*****************        事件         **********************/
-	public event Func<object, Vector3I, Task> 玩家移动到新区块;
+	public event Func<Vector3I, Task> 玩家移动到新区块;
 
     /*****************        事件         **********************/
 
@@ -67,11 +67,11 @@ using System.Threading.Tasks;
 			);
 			if(上一次玩家所在区块 != 玩家所在区块)
 			{
-				玩家移动到新区块?.Invoke(this,玩家所在区块);
+				玩家移动到新区块?.Invoke(玩家所在区块);
 			}
             if(是否为初次加载)
             {
-                玩家移动到新区块?.Invoke(this, 玩家所在区块);
+                玩家移动到新区块?.Invoke(玩家所在区块);
                 是否为初次加载 = false;
             }
 			上一次玩家所在区块 = 玩家所在区块;
@@ -81,7 +81,7 @@ using System.Threading.Tasks;
 		{
 			玩家所在区块 = new(0,0,0);
 			上一次玩家所在区块 = 玩家所在区块;
-			玩家移动到新区块?.Invoke(this, 玩家所在区块);
+			玩家移动到新区块?.Invoke(玩家所在区块);
 		}
     }
 }
