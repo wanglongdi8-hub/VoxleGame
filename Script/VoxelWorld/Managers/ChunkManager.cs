@@ -28,8 +28,8 @@ using System.Threading.Tasks;
     public override void _Ready()
     {
         _voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.玩家移动到新区块 += 响应更新视距内区块;
-        地形被删除+= 响应删除地形;
+       // _voxelWorld.玩家移动到新区块 += 响应更新视距内区块;
+       // 地形被删除+= 响应删除地形;
     }
 
     

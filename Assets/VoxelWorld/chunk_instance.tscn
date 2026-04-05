@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ptcxf0t045ma"]
+
+[ext_resource type="Script" uid="uid://bc07spwnxm1hc" path="res://Script/VoxelWorld/ChunkInstance.cs" id="1_78cff"]
+
+[node name="ChunkInstance" type="Node3D" unique_id=1076571317]
+script = ExtResource("1_78cff")

@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 	{
 		_voxelWorld = GetParent<VoxelWorld>();
 		_voxelWorld.ChunkManager.新地形被添加 += 添加地形;
-		初始化地形块计算();
+		//初始化地形块计算();
 	}
     public void InitNoise()
     {
