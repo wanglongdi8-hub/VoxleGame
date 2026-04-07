@@ -1,6 +1,7 @@
 // VoxelCollisionComponent.cs
 using Godot;
 using System.Collections.Generic;
+using GodotVoxelGame.VoxleData;
 
 [Tool]public partial class VoxelCollisionComponent : Node
 {
