@@ -36,7 +36,7 @@ using System.Threading.Tasks;
     }
 
 
-    private async Task 添加区块(object arg1, Chunk chunk)
+    public void 添加区块(Chunk chunk)
     {
         // 生成这个区块的顶点数据
         var meshData = 返回区块顶点数据(chunk);

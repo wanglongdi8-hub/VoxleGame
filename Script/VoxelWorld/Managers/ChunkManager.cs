@@ -15,24 +15,48 @@ using System.Threading.Tasks;
     private VoxelWorld _voxelWorld;
     /*****************        区块实例         ***********************/
     public Dictionary<Vector3I, ChunkInstance> ChunkInstanceDict {get; private set;} = [];
-    public Dictionary<Vector3I,Vector3I> 地形到区块总数据映射 {get; private set;} = []; //区分总数据中那些是地形
-
+    private Dictionary<Vector2I,Vector3I[]> 一个地形柱中的区块索引;
     private Vector2I[]  上次加载的地形坐标 = [];
+    // 队列
+    private Queue<Vector2I> 待生成地形区块 = [];
+    private Queue<Vector2I> 待删除地形区块 = [];
 
-    public event Func<ChunkInstance, Task> 区块实例被添加;
-    public event Func<Vector3I, Task> 区块实例被移除;
+    private Queue<Vector3I> 已生成待实例化区块 = [];
 
-    public event Func<Vector2I, Task> 新地形需求被添加;
-    public event Func<Vector2I, Task> 地形被删除;
+
 
     /*****************        区块实例          **********************/
-
-
-
     public override void _Ready()
     {
         _voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.玩家移动到新区块 += 更新区块内需要加载的地形;
+        _voxelWorld.玩家移动到新区块或视距变化 += 更新区块内需要加载的地形;
+    }
+    public override void _Process(double delta)
+    {
+        // 测试
+        if(待生成地形区块.Count > 0)
+        {
+           var result = 待生成地形区块.Dequeue();
+           var chunk = _voxelWorld.TerrainManager.生成地形数据(result);
+
+           foreach(var T in chunk.Values)
+            {
+                _voxelWorld.MeshGenManager.添加区块(T);
+            }
+        }
+
+        //生成地形
+
+        // 生成区块实例
+ 
+        // 渲染
+
+        
+    }
+
+    private async Task 生成地形()
+    {
+        
     }
 
     private async Task 更新区块内需要加载的地形(Vector3I PlayerChunkPos)
@@ -63,36 +87,17 @@ using System.Threading.Tasks;
         var 需要添加的地形 = 当前需要加载的地形坐标.Except(上次加载的地形坐标).ToArray();
         var 需要移除的地形 = 上次加载的地形坐标.Except(当前需要加载的地形坐标).ToArray();
         
-        // 触发添加事件
+        // 添加到待生成地形区块
         foreach (var 地形坐标 in 需要添加的地形)
         {
-            try
-            {
-                if (新地形需求被添加 != null)
-                {
-                    await 新地形需求被添加.Invoke(地形坐标);
-                }
-            }
-            catch (Exception ex)
-            {
-                GD.PrintErr($"添加地形时发生错误 {地形坐标}: {ex.Message}");
-            }
+            待生成地形区块.Enqueue(地形坐标);
+            GD.Print("添加到待生成地形区块",地形坐标);
         }
         
-        // 触发移除事件
+        // 添加到
         foreach (var 地形坐标 in 需要移除的地形)
         {
-            try
-            {
-                if (地形被删除 != null)
-                {
-                    await 地形被删除.Invoke(地形坐标);
-                }
-            }
-            catch (Exception ex)
-            {
-                GD.PrintErr($"移除地形时发生错误 {地形坐标}: {ex.Message}");
-            }
+            待删除地形区块.Enqueue(地形坐标);
         }
         
         // 更新上次加载的地形坐标
@@ -104,18 +109,8 @@ using System.Threading.Tasks;
     {
         AddChild(chunkInstance);
         ChunkInstanceDict[chunkInstance.chunkData.ChunkPosition] = chunkInstance;
-        区块实例被添加?.Invoke(chunkInstance);
     }
 
-    public void 添加地形到区块总数据映射(Vector3I 地形坐标, Vector3I 区块坐标)
-    {
-        地形到区块总数据映射.TryAdd(地形坐标, 区块坐标);
-    }
-
-    public void 从区块总数据映射移除地形(Vector3I 地形坐标)
-    {
-        地形到区块总数据映射.Remove(地形坐标);
-    }  
 
     
 }

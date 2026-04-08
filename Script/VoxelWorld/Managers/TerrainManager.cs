@@ -24,12 +24,6 @@ using System.Threading.Tasks;
     [Export] public int 世界高度上限 = 2048;
     [Export] public int 海平面高度 = 65;
 
-    [ExportGroup("地形块设置")]
-    [Export]public Vector2I 地形块大小 = new(16, 16); //每个地形块包含多少个区块， (16, 16)表示每个地形块包含16x16个区块
-
-    private Dictionary<Vector2I, float[,]> _预计算的地形块 = [];
-    
-
     /*****************        事件         **********************/
 	public event Func<Vector3I, Task> 地形数据被生成;
 
@@ -39,48 +33,59 @@ using System.Threading.Tasks;
     public override void _Ready()
 	{
 		_voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.ChunkManager.新地形需求被添加 += 检查地形区块是否存在并生成;
+        InitNoise();
         
 	}
 
+
+    public Dictionary<Vector3I, Chunk> 生成地形数据(Vector2I ChunkPos) 
+    {
+        Dictionary<Vector3I, Chunk> ChunkDic = [];
     
+        int 基础高度 = 64; // 设置一个基础高度，避免负数
+        int 高度变化 = 32; // 高度变化范围
 
-    private async Task 检查地形区块是否存在并生成(Vector2I 区块坐标)
-    {
-        var 地形块坐标 = 根据区块坐标计算地形块坐标(区块坐标);
-        if (_预计算的地形块.ContainsKey(地形块坐标)) return;
-            
-        // 生成地形块数据
-        await 生成地形块数据(地形块坐标);  
+        int worldStartX = ChunkPos.X * VoxelConst.CHUNK_SIZE_X;
+        int worldStartZ = ChunkPos.Y * VoxelConst.CHUNK_SIZE_Z;
 
-        获取区块数据并添加到区块管理器(地形块坐标, 区块坐标);
+        for (int x = 0; x < VoxelConst.CHUNK_SIZE_X; x++)
+        {
+            for (int z = 0; z < VoxelConst.CHUNK_SIZE_Z; z++)
+            {
+                int worldX = worldStartX + x;
+                int worldZ = worldStartZ + z;
+                
+                float 主噪声 = _地形噪声.GetNoise2D(worldX, worldZ) * 地形幅度;
+                float 细节噪声 = _细节噪声.GetNoise2D(worldX, worldZ) * 细节幅度;
+                float 总噪声 = 主噪声 + 细节噪声;
+                
+                // 使用基础高度+噪声变化
+                int 地形高度 = 基础高度 + (int)(总噪声 * 高度变化);
+                
+                // 确保地形高度在合理范围内
+                地形高度 = Math.Clamp(地形高度, 1, VoxelConst.世界高度上限);
+                
+                // 计算chunk位置
+                int chunkY = 地形高度 / VoxelConst.CHUNK_SIZE_Y;
+                int localY = 地形高度 % VoxelConst.CHUNK_SIZE_Y;
+                
+                Vector3I newChunkPos = new(ChunkPos.X, chunkY, ChunkPos.Y);
 
+                if(!ChunkDic.ContainsKey(newChunkPos))
+                {
+                    Chunk newChunk = new Chunk(newChunkPos);
+                    newChunk.SetVoxel(x, localY, z, VoxelConst.石头);
+                    ChunkDic.Add(newChunkPos, newChunk);
+                }
+                else
+                {
+                    ChunkDic[newChunkPos].SetVoxel(x, localY, z, VoxelConst.石头);
+                }   
+            }
+        }
+
+        return ChunkDic;
     }
-
-    private Vector2I 根据区块坐标计算地形块坐标(Vector2I 区块坐标)
-    {
-        int 地形块X = Mathf.FloorToInt(区块坐标.X / 地形块大小.X);
-        int 地形块Y = Mathf.FloorToInt(区块坐标.Y / 地形块大小.Y);
-    
-    return new Vector2I(地形块X, 地形块Y);
-    }
-
-    private void 获取区块数据并添加到区块管理器(Vector2I 地形块坐标,Vector2I 区块坐标)
-    {
-        _预计算的地形块.TryGetValue(地形块坐标, out var  地形块高度图);
-
-         // 计算区块在地形块内的局部坐标
-        int 区块在X方向索引 = 区块坐标.X - 地形块坐标.X * 地形块大小.X;
-        int 区块在Z方向索引 = 区块坐标.Y - 地形块坐标.Y * 地形块大小.Y;
-
-        // 获取这个区块对应的高度图区域
-    float[,] 区块高度图 = 地形块.获取区块高度图区域(区块在X方向索引, 区块在Z方向索引);
-
-        Chunk chunkData = new Chunk(new Vector3I(区块坐标.X, 0, 区块坐标.Y));
-
-
-    }
-
 
     public void InitNoise()
     {
@@ -99,76 +104,5 @@ using System.Threading.Tasks;
         _细节噪声.Frequency = 细节缩放;
         _细节噪声.FractalOctaves = 2;
     }
-    
-
-    public async Task 生成地形块数据(Vector2I 地形块位置)
-    {
-        // 计算地形块数据
-        // 地形块包含 16x16 个区块，每个区块有 32x32 个方块
-        // 所以地形块总大小为 16*32 = 512 个方块
-        int 地形块宽度 = 地形块大小.X * VoxelConst.CHUNK_SIZE_X;
-        int 地形块高度 = 地形块大小.Y * VoxelConst.CHUNK_SIZE_Y;
-        
-        // 创建地形块高度图
-        float[,] 地形块高度图 = new float[地形块宽度, 地形块高度];
-        
-        // 计算地形块在世界中的起始位置
-        int 世界起始X = 地形块位置.X * 地形块宽度;
-        int 世界起始Y = 地形块位置.Y * 地形块高度;
-        
-        // 使用并行处理加速地形生成
-        var 并行任务 = new List<Task>();
-        
-        // 将地形块分成多个部分进行并行处理
-        int 并行度 = Math.Min(System.Environment.ProcessorCount, 地形块宽度);
-        int 每部分宽度 = 地形块宽度 / 并行度;
-        
-        for (int 部分索引 = 0; 部分索引 < 并行度; 部分索引++)
-        {
-            int 起始X = 部分索引 * 每部分宽度;
-            int 结束X = (部分索引 == 并行度 - 1) ? 地形块宽度 : 起始X + 每部分宽度;
-            
-            var 任务 = Task.Run(() =>
-            {
-                // 处理当前部分的地形数据
-                for (int x = 起始X; x < 结束X; x++)
-                {
-                    for (int z = 0; z < 地形块高度; z++)
-                    {
-                        // 计算当前点的世界坐标
-                        float worldX = 世界起始X + x;
-                        float worldY = 世界起始Y + z;
-                        
-                        // 使用噪声生成地形高度
-                        float 主噪声 = _地形噪声.GetNoise2D(worldX, worldY) * 地形幅度;
-                        float 细节噪声 = _细节噪声.GetNoise2D(worldX, worldY) * 细节幅度;
-                        float 总噪声 = 主噪声 + 细节噪声;
-                        
-                        // 计算最终高度（基础高度 + 噪声值）
-                        float 高度 = 基础高度 + 总噪声;
-                        
-                        // 限制高度在世界高度上限内
-                        高度 = Mathf.Clamp(高度, 0, 世界高度上限);
-                        
-                        // 存储到高度图（需要线程安全访问）
-                        lock (地形块高度图)
-                        {
-                            地形块高度图[x, z] = 高度;
-                        }
-                    }
-                }
-            });
-            
-            并行任务.Add(任务);
-        }
-        
-        // 等待所有并行任务完成
-        await Task.WhenAll(并行任务);
-        
-        // 存储到预计算字典
-        _预计算的地形块[new (地形块位置.X, 地形块位置.Y)] = 地形块高度图;
-        
-        GD.Print($"地形块数据生成完成: 位置({地形块位置.X}, {地形块位置.Y}), 大小({地形块宽度}x{地形块高度}), 并行度: {并行度}");
-    }
-    
+      
 }

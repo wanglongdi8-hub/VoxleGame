@@ -14,7 +14,10 @@ using System.Threading.Tasks;
     
     [ExportGroup("区块管理器")] 
     [Export]public Vector3I 区块加载范围{get; set;} = new (1, 1, 1);
+    [Export]public Vector3I 玩家所在区块{get; set;}
+	[Export]public Vector3I 上一次玩家所在区块{get;set;}
     [Export]public int 视距{get; set;} = 1;
+    private int 旧视距 =0;
     
     [ExportGroup("地形生成器")] 
     [Export]public FastNoiseLite.NoiseTypeEnum 噪声类型 { get; set; } = FastNoiseLite.NoiseTypeEnum.Simplex;
@@ -31,14 +34,9 @@ using System.Threading.Tasks;
     [Export] public bool 重新生成网格 {get; set;} = true;
     [Export] public bool 清除现有网格 {get; set;} = false;
     
-    [ExportGroup("调试选项")] 
-    [Export]public Vector3I 玩家所在区块{get; set;}
-	[Export]public Vector3I 上一次玩家所在区块{get;set;}
-
-    private bool 是否为初次加载 = true;
     
 	/*****************        事件         **********************/
-	public event Func<Vector3I, Task> 玩家移动到新区块;
+	public event Func<Vector3I, Task> 玩家移动到新区块或视距变化;
 
     /*****************        事件         **********************/
 
@@ -54,6 +52,7 @@ using System.Threading.Tasks;
     public override void _Process(double delta)
     {
         更新玩家所在区块();
+        视距是否变化();
     }
 
     private void 更新玩家所在区块()
@@ -67,13 +66,9 @@ using System.Threading.Tasks;
 			);
 			if(上一次玩家所在区块 != 玩家所在区块)
 			{
-				玩家移动到新区块?.Invoke(玩家所在区块);
+				玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
 			}
-            if(是否为初次加载)
-            {
-                玩家移动到新区块?.Invoke(玩家所在区块);
-                是否为初次加载 = false;
-            }
+            
 			上一次玩家所在区块 = 玩家所在区块;
 
 		}
@@ -81,7 +76,16 @@ using System.Threading.Tasks;
 		{
 			玩家所在区块 = new(0,0,0);
 			上一次玩家所在区块 = 玩家所在区块;
-			玩家移动到新区块?.Invoke(玩家所在区块);
+			玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
 		}
+    }
+
+    private void 视距是否变化()
+    {
+        if(视距 != 旧视距)
+        {
+            玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
+            旧视距 = 视距;
+        }
     }
 }
