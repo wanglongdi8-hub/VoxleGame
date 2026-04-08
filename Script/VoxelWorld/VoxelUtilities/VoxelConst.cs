@@ -18,5 +18,5 @@ public static class VoxelConst
     // ================================
     // 世界相关
     // ================================
-    public const float 世界高度上限 = 128;
+    public const float 世界高度上限 = 64;
 }

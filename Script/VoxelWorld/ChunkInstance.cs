@@ -3,16 +3,33 @@ using GodotVoxelGame.VoxleData;
 using System;
 using System.ComponentModel;
 
-public partial class ChunkInstance : Node
+[Tool]public partial class ChunkInstance : Node
 {
 	public Chunk chunkData { get;  set; }
 	public MeshGenComponent meshComponent { get; set; }
 	public ColliderComponent colliderComponent { get; set; }
+
+	public ChunkInstance(Chunk chunkData)
+	{
+		this.chunkData = chunkData;
+	}
 	
 	public override void _Ready()
 	{
-		ComponentInit();	
+		ComponentInit();
+		渲染网格();	
 	}
+
+    public void 渲染网格()
+    {
+        meshComponent.渲染网格(chunkData);
+    }
+
+	public void 清空网格()
+    {
+        meshComponent.清空网格();
+    }
+
 
     private void ComponentInit()
     {
@@ -21,6 +38,8 @@ public partial class ChunkInstance : Node
         
         AddChild(meshComponent);
 		AddChild(colliderComponent);
+
+		meshComponent.渲染网格(chunkData);
     }
 
 }

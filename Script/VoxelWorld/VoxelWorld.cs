@@ -36,7 +36,8 @@ using System.Threading.Tasks;
     
     
 	/*****************        事件         **********************/
-	public event Func<Vector3I, Task> 玩家移动到新区块或视距变化;
+	public event Func<Vector3I, Task> 玩家移动到新区块;
+    public event Func<Vector3I, Task> 视距变化;
 
     /*****************        事件         **********************/
 
@@ -66,7 +67,7 @@ using System.Threading.Tasks;
 			);
 			if(上一次玩家所在区块 != 玩家所在区块)
 			{
-				玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
+				玩家移动到新区块?.Invoke(玩家所在区块);
 			}
             
 			上一次玩家所在区块 = 玩家所在区块;
@@ -76,7 +77,7 @@ using System.Threading.Tasks;
 		{
 			玩家所在区块 = new(0,0,0);
 			上一次玩家所在区块 = 玩家所在区块;
-			玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
+			玩家移动到新区块?.Invoke(玩家所在区块);
 		}
     }
 
@@ -84,7 +85,8 @@ using System.Threading.Tasks;
     {
         if(视距 != 旧视距)
         {
-            玩家移动到新区块或视距变化?.Invoke(玩家所在区块);
+            视距变化?.Invoke(玩家所在区块);
+            玩家移动到新区块?.Invoke(玩家所在区块);
             旧视距 = 视距;
         }
     }

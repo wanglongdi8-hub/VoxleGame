@@ -26,7 +26,7 @@ using System.Threading.Tasks;
     }
 
 
-    private async Task 移除区块(object arg1, Vector3I chunkPosition)
+    public void 移除区块(Vector3I chunkPosition)
     {
         if (_chunkMeshData.ContainsKey(chunkPosition))
         {

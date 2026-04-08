@@ -16,7 +16,7 @@ sky_material = SubResource("ProceduralSkyMaterial_1btii")
 background_mode = 2
 sky = SubResource("Sky_44mwd")
 tonemap_mode = 2
-glow_enabled = true
+sdfgi_bounce_feedback = 1.0
 
 [node name="MainGame" type="Node3D" unique_id=1966836716]
 script = ExtResource("1_jv8gs")
@@ -30,15 +30,13 @@ shadow_enabled = true
 
 [node name="VoxleWorld" parent="." unique_id=1811242917 node_paths=PackedStringArray("PlayerPivot") instance=ExtResource("2_vh4eo")]
 PlayerPivot = NodePath("../Player/Pivot")
-"玩家所在区块" = Vector3i(0, 0, -15)
-"上一次玩家所在区块" = Vector3i(0, 0, -15)
+"视距" = 12
 
 [node name="Player" parent="." unique_id=664501860 instance=ExtResource("3_htkpn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, -464.45776)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9917693, 21.015366)
 "飞行速度" = 80.0
 "摄像机角度限制" = 70
 
 [node name="Pivot" type="Node3D" parent="Player" unique_id=240906339]
 
 [node name="Node3D" parent="." unique_id=1086782728 instance=ExtResource("14_wksce")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

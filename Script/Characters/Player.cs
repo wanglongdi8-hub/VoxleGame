@@ -17,8 +17,8 @@ public partial class Player : CharacterBody3D
     [Export] public float 转身速度 { get; set; } = 0.5f;
     
     [ExportGroup("飞行")]
-    [Export] public float 飞行速度 { get; set; } = 20f;       
-    [Export] public float 垂直速度 { get; set; } = 10f;        
+    [Export] public float 飞行速度 { get; set; } = 40f;       
+    [Export] public float 垂直速度 { get; set; } = 40f;        
     [Export] public float 飞行加速度 { get; set; } = 5f;       
     [Export] public float 飞行减速 { get; set; } = 3f;        
     [Export] public bool 启用飞行 { get; set; } = true;       
