@@ -14,9 +14,11 @@ using System.Threading.Tasks;
     
     [ExportGroup("区块管理器")] 
     [Export]public Vector3I 区块加载范围{get; set;} = new (1, 1, 1);
-    [Export]public Vector3I 玩家所在区块{get; set;}
-	[Export]public Vector3I 上一次玩家所在区块{get;set;}
     [Export]public int 视距{get; set;} = 1;
+    [Export]public int 每帧加载地形数{get; set;} = 3;
+    public Vector3I 玩家所在区块{get; set;}
+	public Vector3I 上一次玩家所在区块{get;set;}
+    
     private int 旧视距 =0;
     
     [ExportGroup("地形生成器")] 
@@ -30,6 +32,7 @@ using System.Threading.Tasks;
     [Export]public bool 是否生成调试地形 { get; set; } = false;
     
     [ExportGroup("网格渲染器")] 
+    [Export] public BlockAtlasConfig AtlasConfig { get; set; }
     [Export] public bool 启用遮挡剔除 { get; set; } = true;
     [Export] public bool 重新生成网格 {get; set;} = true;
     [Export] public bool 清除现有网格 {get; set;} = false;

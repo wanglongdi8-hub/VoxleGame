@@ -30,10 +30,10 @@ shadow_enabled = true
 
 [node name="VoxleWorld" parent="." unique_id=1811242917 node_paths=PackedStringArray("PlayerPivot") instance=ExtResource("2_vh4eo")]
 PlayerPivot = NodePath("../Player/Pivot")
-"视距" = 12
+"视距" = 5
 
 [node name="Player" parent="." unique_id=664501860 instance=ExtResource("3_htkpn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9917693, 21.015366)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 77.5374, 0)
 "飞行速度" = 80.0
 "摄像机角度限制" = 70
 
