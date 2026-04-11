@@ -22,7 +22,7 @@ public partial class ChunkInstance : Node
 
     public void 渲染网格()
     {
-        meshComponent.渲染不带材质的网格(chunkData);
+        meshComponent.ArrayMesh渲染带材质的网格(chunkData);
     }
 
 	public void 清空网格()

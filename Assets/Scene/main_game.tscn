@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dy5riq6n2ec5b" path="res://Assets/Scene/voxle_world.tscn" id="2_vh4eo"]
 [ext_resource type="PackedScene" uid="uid://djm8ih2gs78mk" path="res://Assets/Characters/player.tscn" id="3_htkpn"]
 [ext_resource type="Script" uid="uid://b4is8oiw4wop6" path="res://Script/VoxelWorld/VoxleData/BlockAtlasConfig.cs" id="5_3dgr3"]
+[ext_resource type="Material" uid="uid://bnhs4vt7cdei" path="res://Assets/VoxelWorld/Texture/block_test.tres" id="5_lfpak"]
 [ext_resource type="PackedScene" uid="uid://2psjwwk6lrda" path="res://Assets/Scene/node_3d.tscn" id="14_wksce"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1btii"]
@@ -21,6 +22,10 @@ sdfgi_bounce_feedback = 1.0
 
 [sub_resource type="Resource" id="Resource_syoyl"]
 script = ExtResource("5_3dgr3")
+AtlasTexture = ExtResource("5_lfpak")
+BlockFaceUVs = Dictionary[int, Array]({
+0: [Vector2i(1, 1), null]
+})
 metadata/_custom_type_script = "uid://b4is8oiw4wop6"
 
 [node name="MainGame" type="Node3D" unique_id=1966836716]
@@ -44,6 +49,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 77.5374, 0)
 
 [node name="VoxleWorld" parent="." unique_id=1811242917 node_paths=PackedStringArray("PlayerPivot") instance=ExtResource("2_vh4eo")]
 PlayerPivot = NodePath("../Player/Pivot")
-"视距" = 12
-"每帧加载地形数" = 5
+"视距" = 20
+"每帧加载地形数" = 10
 AtlasConfig = SubResource("Resource_syoyl")

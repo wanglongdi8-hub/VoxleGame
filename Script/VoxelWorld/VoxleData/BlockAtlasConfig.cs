@@ -9,21 +9,27 @@ public partial class BlockAtlasConfig : Resource
     [Export] public int 行 { get; set; } = 4;
     
     // 方块ID到UV坐标的映射
-    [Export] public Godot.Collections.Dictionary<int, int[]> BlockFaceTextures { get; set; } = new();
+    [Export] public Godot.Collections.Dictionary<int, Godot.Collections.Array<Vector2[]>> BlockFaceUVs { get; set; } = new();
 
-    // 获取方块某个面的材质ID
-    public int GetFaceTextureID(int blockId, int faceIndex)
+    // 获取方块某个面的UV坐标
+    public Vector2[] GetFaceUVs(int blockId, int faceIndex)
     {
-        if (BlockFaceTextures.TryGetValue(blockId, out var faceTextures))
+        if (BlockFaceUVs.TryGetValue(blockId, out var faceUVsArray))
         {
-            if (faceIndex >= 0 && faceIndex < faceTextures.Length)
+            if (faceIndex >= 0 && faceIndex < faceUVsArray.Count)
             {
-                return faceTextures[faceIndex];
+                return faceUVsArray[faceIndex];
             }
         }
         
-        // 如果找不到，返回默认材质（通常是方块的第一面材质）
-        return 0;
+        // 如果找不到，返回默认UV坐标（整个纹理）
+        return new Vector2[]
+        {
+            new Vector2(0, 0),
+            new Vector2(1, 0),
+            new Vector2(0, 1),
+            new Vector2(1, 1)
+        };
     }
-}
 
+}
