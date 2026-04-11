@@ -3,15 +3,21 @@ using System;
 using GodotVoxelGame.VoxleData;
 using System.Collections.Generic;
 
-[Tool]public partial class MeshGenComponent : MeshInstance3D
+public partial class MeshGenComponent : MeshInstance3D
 {
-	public void 清空网格()
+    public int DefaultBlockID { get; set; } = 1;
+    private Material _blockMaterial  = new Material();
+    BlockAtlasConfig atlasConfig = new BlockAtlasConfig();
+
+    public override void _Ready()
     {
-        Mesh = new ArrayMesh();
-    }	
-	public void 渲染网格(Chunk chunk)
+        atlasConfig = G.Instance.AtlasConfig;
+        _blockMaterial = G.Instance.AtlasConfig.AtlasTexture;
+    }
+
+    public void 渲染带材质的网格(Chunk chunk)
     {
-		var arrMesh = new ArrayMesh();
+        var arrMesh = new ArrayMesh();
 		Godot.Collections.Array surfaceArray = [];
         surfaceArray.Resize((int)Mesh.ArrayType.Max);
 
@@ -19,7 +25,7 @@ using System.Collections.Generic;
         List<Vector2> uvs = [];
         List<Vector3> normals = [];
         List<int> indices = [];
-        
+
         int indexOffset = 0;
 
         for (int x = 0; x < VoxelConst.CHUNK_SIZE_X; x++)
@@ -34,7 +40,7 @@ using System.Collections.Generic;
 
                     foreach (var dir in Dirs)
                     {
-                        if (false)
+                        if (G.Instance.启用面剔除)
                         {
                             int nx = x + dir.X;
                             int ny = y + dir.Y;
@@ -64,7 +70,67 @@ using System.Collections.Generic;
 
         arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
 
-        //MaterialOverride = BlockMaterial;
+        MaterialOverride = _blockMaterial;
+
+		Mesh = arrMesh;
+    }
+
+	public void 渲染不带材质的网格(Chunk chunk)
+    {
+		var arrMesh = new ArrayMesh();
+		Godot.Collections.Array surfaceArray = [];
+        surfaceArray.Resize((int)Mesh.ArrayType.Max);
+
+        List<Vector3> verts = [];
+        List<Vector2> uvs = [];
+        List<Vector3> normals = [];
+        List<int> indices = [];
+        
+        int indexOffset = 0;
+
+        for (int x = 0; x < VoxelConst.CHUNK_SIZE_X; x++)
+        {
+            for (int y = 0; y < VoxelConst.CHUNK_SIZE_Y; y++)
+            {
+                for (int z = 0; z < VoxelConst.CHUNK_SIZE_Z; z++)
+                { 
+                    var blockId = chunk.GetVoxel(x, y, z);
+                    if (blockId == 0) continue;
+                    var worldPos = new Vector3(x, y, z) + (Vector3)chunk.ChunkPosition * VoxelConst.CHUNK_SIZE_X;
+
+                    foreach (var dir in Dirs)
+                    {
+                        if (G.Instance.启用面剔除)
+                        {
+                            int nx = x + dir.X;
+                            int ny = y + dir.Y;
+                            int nz = z + dir.Z;
+                            if (IsBlockSolid(chunk, nx, ny, nz))
+                                continue;
+                        }
+
+                        AddFace(
+                            worldPos,
+                            dir,
+                            verts,
+                            uvs,
+                            normals,
+                            indices,
+                            ref indexOffset
+                        );
+                    }
+                }
+            }
+        }
+
+		surfaceArray[(int)Mesh.ArrayType.Vertex] = verts.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.Normal] = normals.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.Index] = indices.ToArray();
+
+        arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
+
+        MaterialOverride = _blockMaterial;
 
 		Mesh = arrMesh;
     }
@@ -115,6 +181,7 @@ using System.Collections.Generic;
 
         offset += 4;
     }
+
 
     private Vector3 GetFaceNormal(Vector3I dir)
     {
@@ -201,4 +268,9 @@ using System.Collections.Generic;
         new(0, 0, 1),  // 前
         new(0, 0, -1)  // 后
     };
+
+    public void 清空网格()
+    {
+        Mesh = new ArrayMesh();
+    }	
 }

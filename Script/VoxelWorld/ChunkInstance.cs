@@ -3,7 +3,7 @@ using GodotVoxelGame.VoxleData;
 using System;
 using System.ComponentModel;
 
-[Tool]public partial class ChunkInstance : Node
+public partial class ChunkInstance : Node
 {
 	public Chunk chunkData { get;  set; }
 	public MeshGenComponent meshComponent { get; set; }
@@ -17,12 +17,12 @@ using System.ComponentModel;
 	public override void _Ready()
 	{
 		ComponentInit();
-		渲染网格();	
+		渲染网格();
 	}
 
     public void 渲染网格()
     {
-        meshComponent.渲染网格(chunkData);
+        meshComponent.渲染不带材质的网格(chunkData);
     }
 
 	public void 清空网格()
@@ -38,8 +38,6 @@ using System.ComponentModel;
         
         AddChild(meshComponent);
 		AddChild(colliderComponent);
-
-		meshComponent.渲染网格(chunkData);
     }
 
 }

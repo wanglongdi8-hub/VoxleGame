@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-[Tool]public partial class MainGame : Node3D
+public partial class MainGame : Node3D
 {
 
 	public override void _Ready()

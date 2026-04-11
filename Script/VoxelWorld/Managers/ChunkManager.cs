@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-[Tool]public partial class ChunkManager : Node
+public partial class ChunkManager : Node
 {
     
     private Vector2I 当前中心区块 = Vector2I.Zero;
     private int 当前视距 = 1;
     private bool 是否需要重新计算需要加载的地形 = false;
+    private Vector2I 上一次玩家所在地形块 = Vector2I.Zero;
     
     private VoxelWorld _voxelWorld;
     /*****************        区块实例         ***********************/
@@ -28,21 +29,26 @@ using System.Threading.Tasks;
     public override void _Ready()
     {
         _voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.玩家移动到新区块 += 更新区块内需要加载的地形;
+        _voxelWorld.玩家移动到新区块 += 控制重新计算要加载的地形;
         _voxelWorld.视距变化 += 清空队列;
-        _voxelWorld.视距变化 += 更新区块内需要加载的地形;
+        _voxelWorld.视距变化 += 视距变化计算地形加载;
     }
 
-    public override void _Process(double delta)
-    {
-        计算需要加载的地形坐标(_voxelWorld.玩家所在区块);
 
+    public override async void _Process(double delta)
+    {
+        if(是否需要重新计算需要加载的地形)
+        {
+            计算需要加载的地形坐标(_voxelWorld.玩家所在区块);
+            是否需要重新计算需要加载的地形 = false;
+        }
+        
         //TODO: 添加并行处理
         for(int i = 0; i < _voxelWorld.每帧加载地形数; i++)
         {
-            生成地形并保存();
-            实例化区块();
-            取消渲染不在视距内的区块();
+            await 生成地形并保存();
+            await 实例化区块();
+            await 取消渲染不在视距内的区块();
         }
 
     }
@@ -54,7 +60,7 @@ using System.Threading.Tasks;
         待删除地形区块.Clear();
     }
 
-    private void 生成地形并保存()
+    private async Task 生成地形并保存()
     {
         if(待生成地形区块.Count > 0)
         {
@@ -78,7 +84,7 @@ using System.Threading.Tasks;
         }
     }
 
-    private void 实例化区块()
+    private async Task 实例化区块()
     {
         if(已生成待实例化区块.Count > 0 )
         {
@@ -91,7 +97,7 @@ using System.Threading.Tasks;
         }   
     }
 
-    private void 取消渲染不在视距内的区块()
+    private async Task 取消渲染不在视距内的区块()
     {
         if(待删除地形区块.Count <= 0) return;
         var 地形坐标 = 待删除地形区块.Dequeue();
@@ -113,7 +119,7 @@ using System.Threading.Tasks;
                 // 从区块索引中移除
                 一个地形柱中的区块索引.Remove(地形坐标);
                 // 从总数据中移除
-                ChunkInstanceDict.Remove(区块坐标);
+                //ChunkInstanceDict.Remove(区块坐标);
             }
         }
     }
@@ -139,11 +145,22 @@ using System.Threading.Tasks;
         return 已实例化的区块队列;
     }
 
-    private async Task 更新区块内需要加载的地形(Vector3I PlayerChunkPos)
+    private async Task 控制重新计算要加载的地形(Vector3I PlayerChunkPos)
     {
-        //await 计算需要加载的地形坐标(PlayerChunkPos);
+        var 当前玩家所在地形块 = new Vector2I(PlayerChunkPos.X, PlayerChunkPos.Z);
+        if(当前玩家所在地形块 != 上一次玩家所在地形块)
+        {
+            上一次玩家所在地形块 = 当前玩家所在地形块;
+            是否需要重新计算需要加载的地形 = true;
+            return;
+        }
+    }
+
+    private async Task 视距变化计算地形加载(Vector3I i)
+    {
         是否需要重新计算需要加载的地形 = true;
     }
+
 
     private void 计算需要加载的地形坐标(Vector3I PlayerChunkPos)
     {
@@ -176,7 +193,7 @@ using System.Threading.Tasks;
         // 添加到待生成地形区块
         foreach (var 地形坐标 in 需要添加的地形)
         {   
-            if(!一个地形柱中的区块索引.ContainsKey(地形坐标))
+            if(!一个地形柱中的区块索引.ContainsKey(地形坐标) && !待删除地形区块.Contains(地形坐标))
             {
                 待生成地形区块.Enqueue(地形坐标);
             }

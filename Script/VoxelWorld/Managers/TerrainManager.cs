@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
-[Tool]
 public partial class TerrainManager : Node
 {
     private VoxelWorld _voxelWorld;

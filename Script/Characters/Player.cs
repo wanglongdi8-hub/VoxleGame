@@ -38,11 +38,6 @@ public partial class Player : CharacterBody3D
     	InputComponent.ProcessInput(@event);
     }
 
-	public override void _Process(double delta)
-	{
-
-	}
-
     public override void _PhysicsProcess(double delta)
     {
         var inputMoveDir = InputComponent.GetMoveInput();

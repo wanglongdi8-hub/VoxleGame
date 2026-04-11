@@ -9,9 +9,6 @@ public partial class CameraComponent : Camera3D
     {
         
     }
-	public override void _Process(double delta)
-	{
-	}
 
 	public void CameraControl(InputEvent @event)
     {
