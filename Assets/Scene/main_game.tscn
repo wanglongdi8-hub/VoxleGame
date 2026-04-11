@@ -49,6 +49,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 77.5374, 0)
 
 [node name="VoxleWorld" parent="." unique_id=1811242917 node_paths=PackedStringArray("PlayerPivot") instance=ExtResource("2_vh4eo")]
 PlayerPivot = NodePath("../Player/Pivot")
-"视距" = 20
+"视距" = 50
 "每帧加载地形数" = 10
 AtlasConfig = SubResource("Resource_syoyl")

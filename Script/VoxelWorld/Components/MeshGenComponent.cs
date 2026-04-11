@@ -2,12 +2,14 @@ using Godot;
 using System;
 using GodotVoxelGame.VoxleData;
 using System.Collections.Generic;
+using GodotVoxelGame.Components;
 
 public partial class MeshGenComponent : MeshInstance3D
 {
     public int DefaultBlockID { get; set; } = 1;
     private Material _blockMaterial = new Material();
     BlockAtlasConfig atlasConfig = new BlockAtlasConfig();
+    public CollisionComponent collisionComponent { get; set; }
     
     // 方块面配置
     public enum BlockFace
@@ -113,6 +115,9 @@ public partial class MeshGenComponent : MeshInstance3D
     {
         atlasConfig = G.Instance.AtlasConfig;
         _blockMaterial = G.Instance.AtlasConfig.AtlasTexture;
+
+        collisionComponent = new CollisionComponent();
+        AddChild(collisionComponent);
     }
 
     public void ArrayMesh渲染带材质的网格(Chunk chunk)
@@ -157,65 +162,74 @@ public partial class MeshGenComponent : MeshInstance3D
                     // 检查六个方向的面是否需要渲染
                     var blockPos = (Vector3I)worldPos;
                     
+                    bool 碰撞体 = false;
                     // 左面
                     var otherPosition = blockPos + Vector3I.Left;
                     var otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Left);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[2], blockVerts[0], blockVerts[3], blockVerts[1]], uvConfig, Vector3I.Left);
+
                     }
                     
                     // 右面
                     otherPosition = blockPos + Vector3I.Right;
                     otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Right);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[7], blockVerts[5], blockVerts[6], blockVerts[4]], uvConfig, Vector3I.Right);
+                        碰撞体 = true;
                     }
                     
                     // 前面
                     otherPosition = blockPos + Vector3I.Forward;
                     otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Front);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[6], blockVerts[4], blockVerts[2], blockVerts[0]], uvConfig, Vector3I.Forward);
+                        碰撞体 = true;
                     }
                     
                     // 后面
                     otherPosition = blockPos + Vector3I.Back;
                     otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Back);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[3], blockVerts[1], blockVerts[7], blockVerts[5]], uvConfig, Vector3I.Back);
+                        碰撞体 = true;
                     }
                     
                     // 下面
                     otherPosition = blockPos + Vector3I.Down;
                     otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Bottom);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[4], blockVerts[5], blockVerts[0], blockVerts[1]], uvConfig, Vector3I.Down);
+                        碰撞体 = true;
                     }
                     
                     // 上面
                     otherPosition = blockPos + Vector3I.Up;
                     otherId = 获取相邻方块ID(otherPosition, chunk);
-                    if (blockId != otherId && 是透明方块(otherId))
+                    if (是透明方块(otherId))
                     {
                         var uvConfig = 获取方块UV配置(blockId, BlockFace.Top);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
                             [blockVerts[2], blockVerts[3], blockVerts[6], blockVerts[7]], uvConfig, Vector3I.Up);
+                        碰撞体 = true;
                     }
+
+                    //添加方块碰撞体(blockPos);
                 }
             }
         }
@@ -375,6 +389,32 @@ public partial class MeshGenComponent : MeshInstance3D
         surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(vertices[1]); // 左下
         surfaceTool.SetUV(uvs[0]); surfaceTool.AddVertex(vertices[0]); // 左上
     }
+
+    private void 添加方块碰撞体(Vector3I blockPos)
+    {
+        var staticBody = new StaticBody3D
+        {
+            Name = $"Block_{blockPos.X}_{blockPos.Y}_{blockPos.Z}",
+            Position = blockPos
+        };
+        
+        var collisionShape = new CollisionShape3D
+        {
+            Shape = new BoxShape3D
+            {
+                Size = new Vector3(1, 1, 1)
+            }
+        };
+        
+        staticBody.AddChild(collisionShape);
+        AddChild(staticBody);
+    }
+
+    private bool 需要碰撞体(int blockId)
+    {
+        return true;
+    }
+
 
     public void 清空网格()
     {
