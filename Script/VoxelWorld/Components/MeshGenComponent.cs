@@ -2,13 +2,112 @@ using Godot;
 using System;
 using GodotVoxelGame.VoxleData;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 public partial class MeshGenComponent : MeshInstance3D
 {
     public int DefaultBlockID { get; set; } = 1;
-    private Material _blockMaterial  = new Material();
+    private Material _blockMaterial = new Material();
     BlockAtlasConfig atlasConfig = new BlockAtlasConfig();
+    
+    // 方块面配置
+    public enum BlockFace
+    {
+        Top,
+        Bottom,
+        Left,
+        Right,
+        Front,
+        Back
+    }
+    
+    // 方块纹理配置结构
+    public struct BlockTextureConfig
+    {
+        public int Top; // 顶部纹理
+        public int Bottom; // 底部纹理
+        public int Left; // 左侧纹理
+        public int Right; // 右侧纹理
+        public int Front; // 前面纹理
+        public int Back; // 后面纹理
+        
+        /// <summary>
+        /// 构造函数：所有面使用相同纹理
+        /// </summary>
+        public BlockTextureConfig(int allSides)
+        {
+            Top = Bottom = Left = Right = Front = Back = allSides;
+        }
+        
+        /// <summary>
+        /// 构造函数：顶部和底部使用相同纹理，四周使用相同纹理
+        /// </summary>
+        public BlockTextureConfig(int topBottom, int sides)
+        {
+            Top = Bottom = topBottom;
+            Left = Right = Front = Back = sides;
+        }
+        
+        /// <summary>
+        /// 构造函数：顶部和底部使用不同纹理，四周使用相同纹理
+        /// </summary>
+        /// <param name="top">顶部纹理</param>
+        /// <param name="bottom">底部纹理</param>
+        /// <param name="sides">四周面（左、右、前、后）纹理</param>
+        public BlockTextureConfig(int top, int bottom, int sides)
+        {
+            Top = top;
+            Bottom = bottom;
+            Left = Right = Front = Back = sides;
+        }
+        
+        /// <summary>
+        /// 构造函数：所有面都不同
+        /// </summary>
+        public BlockTextureConfig(int top, int bottom, int left, int right, int front, int back)
+        {
+            Top = top;
+            Bottom = bottom;
+            Left = left;
+            Right = right;
+            Front = front;
+            Back = back;
+        }
+    }
+    
+    // 方块纹理配置字典
+    private Dictionary<int, BlockTextureConfig> blockTextureConfigs = new Dictionary<int, BlockTextureConfig>()
+    {
+        { 0, new BlockTextureConfig(0) },  // 空气
+        { 1, new BlockTextureConfig(15) },  // 石头
+        { 2, new BlockTextureConfig(2) },  // 泥土
+        { 3, new BlockTextureConfig(0, 2, 1) },  // 草地：顶部草(0)，底部泥土(2)，侧面草(1)
+        { 4, new BlockTextureConfig(4) },  // 木板
+        { 5, new BlockTextureConfig(10, 5) },  // 熔炉：顶部底部(31)，侧面(5)
+        { 6, new BlockTextureConfig(6) },  // 树苗
+        { 7, new BlockTextureConfig(7) },  // 基岩
+        { 8, new BlockTextureConfig(8) },  // 水
+        { 9, new BlockTextureConfig(9) },  // 静止的水
+        { 10, new BlockTextureConfig(10) }, // 熔岩
+        { 11, new BlockTextureConfig(11) }, // 静止的熔岩
+        { 12, new BlockTextureConfig(30, 12) }, // 木头：顶部底部(30)，侧面(12)
+        { 13, new BlockTextureConfig(13) }, // 树叶
+        { 14, new BlockTextureConfig(14) }, // 玻璃
+        { 15, new BlockTextureConfig(15) }, // 红矿石
+        { 16, new BlockTextureConfig(16) }, // 钻石矿石
+        { 17, new BlockTextureConfig(17) }, // 工作台
+        { 18, new BlockTextureConfig(18) }, // 仙人掌
+        { 19, new BlockTextureConfig(4, 19) }, // 书架：顶部底部(4)，侧面(19)
+        { 20, new BlockTextureConfig(20) }, // 南瓜
+        { 21, new BlockTextureConfig(21) }, // 南瓜灯
+        { 22, new BlockTextureConfig(22) }, // 蛋糕
+        { 23, new BlockTextureConfig(23) }, // 锁链
+        { 24, new BlockTextureConfig(24) }, // 萤石
+        { 25, new BlockTextureConfig(25) }, // 铁轨
+        { 26, new BlockTextureConfig(26) }, // 花1
+        { 27, new BlockTextureConfig(27) }, // 花2
+        { 28, new BlockTextureConfig(28) }, // 草
+        { 29, new BlockTextureConfig(29) }, // 蘑菇
+    };
 
     public override void _Ready()
     {
@@ -42,42 +141,17 @@ public partial class MeshGenComponent : MeshInstance3D
                     // 计算方块的8个顶点
                     var blockVerts = 计算方块顶点((Vector3I)worldPos);
                     
-                    // 计算方块的UV坐标
-                    var sideUvs = 计算方块UV(blockId);
-                    var topUvs = sideUvs;
-                    var bottomUvs = sideUvs;
-                    
                     // 处理花草方块的特殊绘制方式
                     if (blockId == 27 || blockId == 28)
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Front);
                         // 第一个交叉面
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[2], blockVerts[0], blockVerts[7], blockVerts[5]], sideUvs, new Vector3I(0, 0, 0));
+                            [blockVerts[2], blockVerts[0], blockVerts[7], blockVerts[5]], uvConfig, new Vector3I(0, 0, 0));
                         // 第二个交叉面
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[3], blockVerts[1], blockVerts[6], blockVerts[4]], sideUvs, new Vector3I(0, 0, 0));
+                            [blockVerts[3], blockVerts[1], blockVerts[6], blockVerts[4]], uvConfig, new Vector3I(0, 0, 0));
                         continue;
-                    }
-                    
-                    // 处理需要不同顶部/底部纹理的方块
-                    switch (blockId)
-                    {
-                        case 3:  // 草地：顶部用草(0)，底部用泥土(2)
-                            topUvs = 计算方块UV(0);
-                            bottomUvs = 计算方块UV(2);
-                            break;
-                        case 5:  // 熔炉：顶部和底部用特殊纹理(31)
-                            topUvs = 计算方块UV(31);
-                            bottomUvs = topUvs;
-                            break;
-                        case 12: // 木头：顶部和底部用年轮纹理(30)
-                            topUvs = 计算方块UV(30);
-                            bottomUvs = topUvs;
-                            break;
-                        case 19: // 书架：顶部和底部用木板纹理(4)
-                            topUvs = 计算方块UV(4);
-                            bottomUvs = topUvs;
-                            break;
                     }
                     
                     // 检查六个方向的面是否需要渲染
@@ -88,8 +162,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     var otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Left);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[2], blockVerts[0], blockVerts[3], blockVerts[1]], sideUvs, Vector3I.Left);
+                            [blockVerts[2], blockVerts[0], blockVerts[3], blockVerts[1]], uvConfig, Vector3I.Left);
                     }
                     
                     // 右面
@@ -97,8 +172,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Right);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[7], blockVerts[5], blockVerts[6], blockVerts[4]], sideUvs, Vector3I.Right);
+                            [blockVerts[7], blockVerts[5], blockVerts[6], blockVerts[4]], uvConfig, Vector3I.Right);
                     }
                     
                     // 前面
@@ -106,8 +182,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Front);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[6], blockVerts[4], blockVerts[2], blockVerts[0]], sideUvs, Vector3I.Forward);
+                            [blockVerts[6], blockVerts[4], blockVerts[2], blockVerts[0]], uvConfig, Vector3I.Forward);
                     }
                     
                     // 后面
@@ -115,8 +192,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Back);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[3], blockVerts[1], blockVerts[7], blockVerts[5]], sideUvs, Vector3I.Back);
+                            [blockVerts[3], blockVerts[1], blockVerts[7], blockVerts[5]], uvConfig, Vector3I.Back);
                     }
                     
                     // 下面
@@ -124,8 +202,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Bottom);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[4], blockVerts[5], blockVerts[0], blockVerts[1]], bottomUvs, Vector3I.Down);
+                            [blockVerts[4], blockVerts[5], blockVerts[0], blockVerts[1]], uvConfig, Vector3I.Down);
                     }
                     
                     // 上面
@@ -133,8 +212,9 @@ public partial class MeshGenComponent : MeshInstance3D
                     otherId = 获取相邻方块ID(otherPosition, chunk);
                     if (blockId != otherId && 是透明方块(otherId))
                     {
+                        var uvConfig = 获取方块UV配置(blockId, BlockFace.Top);
                         添加方块面(verts, uvs, indices, normals, ref indexOffset, 
-                            [blockVerts[2], blockVerts[3], blockVerts[6], blockVerts[7]], topUvs, Vector3I.Up);
+                            [blockVerts[2], blockVerts[3], blockVerts[6], blockVerts[7]], uvConfig, Vector3I.Up);
                     }
                 }
             }
@@ -151,110 +231,42 @@ public partial class MeshGenComponent : MeshInstance3D
         Mesh = arrMesh;
     }
 
-    // 绘制单个方块的网格
-    private void 绘制方块网格(SurfaceTool surfaceTool, Vector3I blockPosition, int blockId, Chunk chunk)
+    // 根据方块ID和面获取对应的UV配置
+    private Vector2[] 获取方块UV配置(int blockId, BlockFace face)
     {
-        // 计算方块的8个顶点
-        var verts = 计算方块顶点(blockPosition);
-        
-        // 计算方块的UV坐标
-        var uvs = 计算方块UV(blockId);
-        var topUvs = uvs;    // 顶部UV
-        var bottomUvs = uvs; // 底部UV
-        
-        // 处理花草方块的特殊绘制方式
-        if (blockId == 27 || blockId == 28)
+        if (!blockTextureConfigs.ContainsKey(blockId))
         {
-            绘制方块面(surfaceTool, new[] { verts[2], verts[0], verts[7], verts[5] }, uvs);
-            绘制方块面(surfaceTool, new[] { verts[7], verts[5], verts[2], verts[0] }, uvs);
-            绘制方块面(surfaceTool, new[] { verts[3], verts[1], verts[6], verts[4] }, uvs);
-            绘制方块面(surfaceTool, new[] { verts[6], verts[4], verts[3], verts[1] }, uvs);
-            return;
+            // 如果方块没有配置，使用默认方块ID
+            blockId = DefaultBlockID;
         }
         
-        // 处理需要不同顶部/底部纹理的方块
-        switch (blockId)
+        var config = blockTextureConfigs[blockId];
+        int textureId = face switch
         {
-            case 3:  // 草地：顶部用草(0)，底部用泥土(2)
-                topUvs = 计算方块UV(0);
-                bottomUvs = 计算方块UV(2);
-                break;
-            case 5:  // 熔炉：顶部和底部用特殊纹理(31)
-                topUvs = 计算方块UV(31);
-                bottomUvs = topUvs;
-                break;
-            case 12: // 木头：顶部和底部用年轮纹理(30)
-                topUvs = 计算方块UV(30);
-                bottomUvs = topUvs;
-                break;
-            case 19: // 书架：顶部和底部用木板纹理(4)
-                topUvs = 计算方块UV(4);
-                bottomUvs = topUvs;
-                break;
-        }
+            BlockFace.Top => config.Top,
+            BlockFace.Bottom => config.Bottom,
+            BlockFace.Left => config.Left,
+            BlockFace.Right => config.Right,
+            BlockFace.Front => config.Front,
+            BlockFace.Back => config.Back,
+            _ => blockId
+        };
         
-        // 检查六个方向的面是否需要渲染
-        // 左面
-        var otherPosition = blockPosition + Vector3I.Left;
-        var otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[2], verts[0], verts[3], verts[1] }, uvs);
-        }
-        
-        // 右面
-        otherPosition = blockPosition + Vector3I.Right;
-        otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[7], verts[5], verts[6], verts[4] }, uvs);
-        }
-        
-        // 前面
-        otherPosition = blockPosition + Vector3I.Forward;
-        otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[6], verts[4], verts[2], verts[0] }, uvs);
-        }
-        
-        // 后面
-        otherPosition = blockPosition + Vector3I.Back;
-        otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[3], verts[1], verts[7], verts[5] }, uvs);
-        }
-        
-        // 下面
-        otherPosition = blockPosition + Vector3I.Down;
-        otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[4], verts[5], verts[0], verts[1] }, bottomUvs);
-        }
-        
-        // 上面
-        otherPosition = blockPosition + Vector3I.Up;
-        otherId = 获取相邻方块ID(otherPosition, chunk);
-        if (blockId != otherId && 是透明方块(otherId))
-        {
-            绘制方块面(surfaceTool, new[] { verts[2], verts[3], verts[6], verts[7] }, topUvs);
-        }
+        return 计算方块UV(textureId);
     }
-
+    
     // 计算方块UV坐标的核心方法
-    private Vector2[] 计算方块UV(int blockId)
+    private Vector2[] 计算方块UV(int textureId)
     {
         const int TEXTURE_SHEET_WIDTH = 8;  // 纹理图集每行8个纹理
         const float TEXTURE_TILE_SIZE = 1.0f / TEXTURE_SHEET_WIDTH;  // 每个纹理的大小
         
         // 计算纹理在图集中的行列位置
-        int row = blockId / TEXTURE_SHEET_WIDTH;  // 行
-        int col = blockId % TEXTURE_SHEET_WIDTH;  // 列
+        int row = textureId / TEXTURE_SHEET_WIDTH;  // 行
+        int col = textureId % TEXTURE_SHEET_WIDTH;  // 列
         
         // 添加微小偏移避免纹理接缝
-        const float margin = 0.2f;
+        const float margin = 0.01f;
         
         // 返回四个UV坐标（对应一个面的四个角）
         return new[]
@@ -298,21 +310,6 @@ public partial class MeshGenComponent : MeshInstance3D
         };
     }
 
-    // 绘制方块的一个面（由两个三角形组成）
-    private void 绘制方块面(SurfaceTool surfaceTool, Vector3[] vertices, Vector2[] uvs)
-    {
-        // 第一个三角形（逆时针顺序）
-        surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(vertices[1]); // 左下
-        surfaceTool.SetUV(uvs[2]); surfaceTool.AddVertex(vertices[2]); // 右上
-        surfaceTool.SetUV(uvs[3]); surfaceTool.AddVertex(vertices[3]); // 右下
-        
-        // 第二个三角形
-        surfaceTool.SetUV(uvs[2]); surfaceTool.AddVertex(vertices[2]); // 右上
-        surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(vertices[1]); // 左下
-        surfaceTool.SetUV(uvs[0]); surfaceTool.AddVertex(vertices[0]); // 左上
-        
-    }
-
     // 获取相邻方块的ID
     private int 获取相邻方块ID(Vector3I localPosition, Chunk chunk)
     {
@@ -321,7 +318,6 @@ public partial class MeshGenComponent : MeshInstance3D
             localPosition.Y >= 0 && localPosition.Y < VoxelConst.CHUNK_SIZE_Y &&
             localPosition.Z >= 0 && localPosition.Z < VoxelConst.CHUNK_SIZE_Z)
         {
-
             return chunk.GetVoxel(localPosition.X, localPosition.Y, localPosition.Z);
         }
         
@@ -338,8 +334,7 @@ public partial class MeshGenComponent : MeshInstance3D
         return blockId == 0 || (blockId > 25 && blockId < 30);
     }
 
-
-// 添加方块的一个面到网格数据中
+    // 添加方块的一个面到网格数据中
     private void 添加方块面(List<Vector3> verts, List<Vector2> uvs, List<int> indices, 
         List<Vector3> normals, ref int indexOffset, Vector3[] vertices, Vector2[] faceUvs, Vector3I normal)
     {
@@ -365,12 +360,25 @@ public partial class MeshGenComponent : MeshInstance3D
         
         indexOffset += 4;
     }
+    
+    
+    // 绘制方块的一个面（由两个三角形组成）
+    private void 绘制方块面(SurfaceTool surfaceTool, Vector3[] vertices, Vector2[] uvs)
+    {
+        // 第一个三角形（逆时针顺序）
+        surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(vertices[1]); // 左下
+        surfaceTool.SetUV(uvs[2]); surfaceTool.AddVertex(vertices[2]); // 右上
+        surfaceTool.SetUV(uvs[3]); surfaceTool.AddVertex(vertices[3]); // 右下
+        
+        // 第二个三角形
+        surfaceTool.SetUV(uvs[2]); surfaceTool.AddVertex(vertices[2]); // 右上
+        surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(vertices[1]); // 左下
+        surfaceTool.SetUV(uvs[0]); surfaceTool.AddVertex(vertices[0]); // 左上
+    }
 
-	public void 清空网格()
+    public void 清空网格()
     {
         var arrMesh = new ArrayMesh();
         Mesh = arrMesh;
     }
-    
-
 }
