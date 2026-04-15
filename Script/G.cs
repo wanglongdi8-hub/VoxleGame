@@ -12,6 +12,7 @@ public partial class G : Node
 	public override void _Ready()
     {
         Instance = this;
+		Engine.MaxFps = 90;
     }
 	
 	public  Node GetGmaeRoot()

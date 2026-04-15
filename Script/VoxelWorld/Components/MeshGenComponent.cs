@@ -116,8 +116,8 @@ public partial class MeshGenComponent : MeshInstance3D
         atlasConfig = G.Instance.AtlasConfig;
         _blockMaterial = G.Instance.AtlasConfig.AtlasTexture;
 
-        collisionComponent = new CollisionComponent();
-        AddChild(collisionComponent);
+        //collisionComponent = new CollisionComponent();
+       // AddChild(collisionComponent);
     }
 
     public void ArrayMesh渲染带材质的网格(Chunk chunk)
