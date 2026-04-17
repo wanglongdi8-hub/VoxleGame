@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://can27ptoq4y03"]
+
+[ext_resource type="PackedScene" uid="uid://cutc5f10wybqy" path="res://Assets/Scene/StartGame/StartGameMode.tscn" id="1_icixs"]
+[ext_resource type="PackedScene" uid="uid://crp0bos7cdug7" path="res://Assets/Scene/StartGame/StartGUIViewManager.tscn" id="3_xdvgp"]
+
+[node name="StartGame" type="Node3D" unique_id=1018118669]
+
+[node name="StartGameMode" parent="." unique_id=2022293973 node_paths=PackedStringArray("GUIManager") instance=ExtResource("1_icixs")]
+GUIManager = NodePath("../StartGuiViewManager")
+
+[node name="StartGuiViewManager" parent="." unique_id=1544276530 node_paths=PackedStringArray("GuiRoot") instance=ExtResource("3_xdvgp")]
+GuiRoot = NodePath("../UIRoot")
+
+[node name="UIRoot" type="Control" parent="." unique_id=1741829498]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

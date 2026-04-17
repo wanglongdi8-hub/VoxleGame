@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://3qob86wf7m7n"]
+
+[ext_resource type="Script" uid="uid://drqchljsm4ld4" path="res://Script/Core/GameMode/GameModeBase.cs" id="1_tju35"]
+
+[node name="GameModeBase" type="Node" unique_id=1819079622]
+script = ExtResource("1_tju35")

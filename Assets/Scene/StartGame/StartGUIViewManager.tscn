@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://crp0bos7cdug7"]
+
+[ext_resource type="Script" uid="uid://3cigschqwo5s" path="res://Script/Core/GUI/GUIViewManager.cs" id="1_84tpr"]
+[ext_resource type="Script" uid="uid://beggfo46hgu62" path="res://Script/Core/GUI/GUIViewConfig.cs" id="2_0evud"]
+[ext_resource type="PackedScene" uid="uid://sv0tjp3sj0bo" path="res://Assets/GUI/StartMenu/StartMenu.tscn" id="3_1dhww"]
+[ext_resource type="PackedScene" uid="uid://g522bcp5vjm0" path="res://Assets/GUI/SettingsMenu/SettingsMenu.tscn" id="4_e0u6e"]
+
+[sub_resource type="Resource" id="Resource_tltll"]
+script = ExtResource("2_0evud")
+Id = &"StartMenu"
+Prefab = ExtResource("3_1dhww")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
+
+[sub_resource type="Resource" id="Resource_7007e"]
+script = ExtResource("2_0evud")
+Id = &"SettingsMenu"
+Prefab = ExtResource("4_e0u6e")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
+
+[node name="StartGuiViewManager" type="Node" unique_id=1544276530 node_paths=PackedStringArray("GuiRoot")]
+script = ExtResource("1_84tpr")
+ViewConfigList = Array[ExtResource("2_0evud")]([SubResource("Resource_tltll"), SubResource("Resource_7007e")])
+GuiRoot = NodePath("Control")
+
+[node name="Control" type="Control" parent="." unique_id=1275611678]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://c5untc3v8c568"]
+
+[ext_resource type="Script" uid="uid://cx1dilte0raim" path="res://Script/Core/Scene/SceneManager.cs" id="1_o1wq0"]
+[ext_resource type="Script" uid="uid://m1rwtnjx6qpx" path="res://Script/Core/Scene/SceneConfig.cs" id="2_pdwja"]
+[ext_resource type="PackedScene" uid="uid://can27ptoq4y03" path="res://Assets/Scene/StartGame/StartGame.tscn" id="3_xb8j3"]
+[ext_resource type="PackedScene" uid="uid://erar5rv2yd7u" path="res://Assets/Scene/MainGame/main_game.tscn" id="4_xb8j3"]
+
+[sub_resource type="Resource" id="Resource_h63hs"]
+script = ExtResource("2_pdwja")
+Id = &"StartGame"
+ScenePack = ExtResource("3_xb8j3")
+metadata/_custom_type_script = "uid://m1rwtnjx6qpx"
+
+[sub_resource type="Resource" id="Resource_kcamh"]
+script = ExtResource("2_pdwja")
+Id = &"MainGame"
+ScenePack = ExtResource("4_xb8j3")
+metadata/_custom_type_script = "uid://m1rwtnjx6qpx"
+
+[node name="SceneManager" type="Node" unique_id=108432364]
+script = ExtResource("1_o1wq0")
+SceneConfigList = Array[ExtResource("2_pdwja")]([SubResource("Resource_h63hs"), SubResource("Resource_kcamh")])

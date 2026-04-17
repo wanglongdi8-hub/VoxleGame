@@ -14,6 +14,7 @@ public partial class ChunkManager : Node
     private Vector2I 上一次玩家所在地形块 = Vector2I.Zero;
     
     private VoxelWorld _voxelWorld;
+
     /*****************        区块实例         ***********************/
     private Dictionary<Vector3I, ChunkInstance> ChunkInstanceDict  = [];
     private HashSet<Vector3> 已实例化的区块 = [];
@@ -26,6 +27,8 @@ public partial class ChunkManager : Node
     private Queue<Vector2I> 待删除地形区块 = [];
 
     /*****************        区块实例          **********************/
+
+    
     public override void _Ready()
     {
         _voxelWorld = GetParent<VoxelWorld>();

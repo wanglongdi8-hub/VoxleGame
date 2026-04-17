@@ -3,6 +3,8 @@ using System;
 
 public partial class BaseGUIView : Node
 {
+	[ExportGroup("组件引用")]
+	[Export]public GUIViewManager GUIManager {get; set;}
 	public GUIViewConfig Config { get; set; } = null;
 	public int viewinstanceId { get; set; } = -1;
 
@@ -30,7 +32,7 @@ public partial class BaseGUIView : Node
 
 	protected void CloseSelf()
 	{
-		G.Instance.GetGUIViewManager().CloseView(viewinstanceId);
+		GUIManager.CloseView(viewinstanceId);
 	}
 
 }

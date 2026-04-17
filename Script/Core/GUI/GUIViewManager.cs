@@ -73,6 +73,7 @@ public partial class GUIViewManager : Node
 		view.Config = config;
 		view.viewinstanceId = viewInstanceId;
 		_viewInstanceDict[viewInstanceId] = view;
+		view.GUIManager = this;
 		GuiRoot.AddChild(view);
 		view.OpenView();
 		return viewInstanceId;

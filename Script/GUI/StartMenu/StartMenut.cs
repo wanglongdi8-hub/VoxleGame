@@ -21,6 +21,6 @@ public partial class StartMenut : BaseGUIView
 
 	public void _on_settings_button_pressed()
 	{
-		G.Instance.GetGUIViewManager().OpenView("SettingsMenu");
+		GUIManager.OpenView("SettingsMenu");
 	}
 }

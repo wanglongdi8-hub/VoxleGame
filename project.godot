@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="C:\\GodotGame\\GodotVoxelGame"
-run/main_scene="uid://erar5rv2yd7u"
+run/main_scene="uid://can27ptoq4y03"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-G="*uid://vcvmig7qojf7"
+G="*uid://baf8ucl6a45vc"
 
 [display]
 

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cutc5f10wybqy"]
+
+[ext_resource type="Script" uid="uid://drqchljsm4ld4" path="res://Script/Core/GameMode/GameModeBase.cs" id="1_nngvy"]
+[ext_resource type="PackedScene" uid="uid://crp0bos7cdug7" path="res://Assets/Scene/StartGame/StartGUIViewManager.tscn" id="2_ly07a"]
+
+[node name="StartGameMode" type="Node" unique_id=2022293973]
+script = ExtResource("1_nngvy")
+GUIManager = ExtResource("2_ly07a")
+
+[node name="StartGuiViewManager" parent="." unique_id=1544276530 instance=ExtResource("2_ly07a")]
