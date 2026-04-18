@@ -1,15 +1,40 @@
 [gd_scene format=3 uid="uid://can27ptoq4y03"]
 
 [ext_resource type="PackedScene" uid="uid://cutc5f10wybqy" path="res://Assets/Scene/StartGame/StartGameMode.tscn" id="1_icixs"]
+[ext_resource type="Script" uid="uid://3cw6ffkva45n" path="res://Script/Core/GameMode/StartGameMode.cs" id="2_xdvgp"]
 [ext_resource type="PackedScene" uid="uid://crp0bos7cdug7" path="res://Assets/Scene/StartGame/StartGUIViewManager.tscn" id="3_xdvgp"]
+[ext_resource type="Script" uid="uid://beggfo46hgu62" path="res://Script/Core/GUI/GUIViewConfig.cs" id="4_bny7u"]
+[ext_resource type="PackedScene" uid="uid://sv0tjp3sj0bo" path="res://Assets/GUI/StartMenu/StartMenu.tscn" id="5_gc0cg"]
+[ext_resource type="PackedScene" uid="uid://g522bcp5vjm0" path="res://Assets/GUI/SettingsMenu/SettingsMenu.tscn" id="6_stbwm"]
+[ext_resource type="PackedScene" uid="uid://dm2o6y0evmonw" path="res://Assets/GUI/NewGameMenu/NewGameMenu.tscn" id="7_gxk70"]
+
+[sub_resource type="Resource" id="Resource_tltll"]
+script = ExtResource("4_bny7u")
+Id = &"StartMenu"
+Prefab = ExtResource("5_gc0cg")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
+
+[sub_resource type="Resource" id="Resource_7007e"]
+script = ExtResource("4_bny7u")
+Id = &"SettingsMenu"
+Prefab = ExtResource("6_stbwm")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
+
+[sub_resource type="Resource" id="Resource_4hyjl"]
+script = ExtResource("4_bny7u")
+Id = &"NewGameMenu"
+Prefab = ExtResource("7_gxk70")
+metadata/_custom_type_script = "uid://beggfo46hgu62"
 
 [node name="StartGame" type="Node3D" unique_id=1018118669]
 
 [node name="StartGameMode" parent="." unique_id=2022293973 node_paths=PackedStringArray("GUIManager") instance=ExtResource("1_icixs")]
-GUIManager = NodePath("../StartGuiViewManager")
+script = ExtResource("2_xdvgp")
+GUIManager = NodePath("StartGuiViewManager2")
 
-[node name="StartGuiViewManager" parent="." unique_id=1544276530 node_paths=PackedStringArray("GuiRoot") instance=ExtResource("3_xdvgp")]
-GuiRoot = NodePath("../UIRoot")
+[node name="StartGuiViewManager2" parent="StartGameMode" unique_id=1544276530 node_paths=PackedStringArray("GuiRoot") instance=ExtResource("3_xdvgp")]
+ViewConfigList = Array[ExtResource("4_bny7u")]([SubResource("Resource_tltll"), SubResource("Resource_7007e"), SubResource("Resource_4hyjl")])
+GuiRoot = NodePath("../../UIRoot")
 
 [node name="UIRoot" type="Control" parent="." unique_id=1741829498]
 layout_mode = 3

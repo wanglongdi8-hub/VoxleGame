@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dte2obhehwipk"]
+
+[ext_resource type="Script" uid="uid://bn3j2eemxeulr" path="res://Script/Core/GameMode/MainGameMode.cs" id="1_dbky4"]
+
+[node name="MainGameMode" type="Node" unique_id=80920707]
+script = ExtResource("1_dbky4")

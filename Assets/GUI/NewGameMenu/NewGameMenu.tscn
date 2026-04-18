@@ -1,9 +1,80 @@
 [gd_scene format=3 uid="uid://dm2o6y0evmonw"]
 
-[node name="NewGameMenu" type="Control" unique_id=1854328124]
+[ext_resource type="Script" uid="uid://dd2iqoo2n5ifk" path="res://Script/GUI/NewGameMenu/NewGameMenu.cs" id="1_mo1ve"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tyet3"]
+bg_color = Color(0.33251366, 0.4046196, 0.21908581, 1)
+
+[node name="NewGameMenu" type="Control" unique_id=10884428 node_paths=PackedStringArray("世界种子", "世界名称", "返回", "创建新世界")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_mo1ve")
+"世界种子" = NodePath("VBoxContainer/世界种子/LineEdit")
+"世界名称" = NodePath("VBoxContainer/世界名称/LineEdit")
+"返回" = NodePath("VBoxContainer/HBoxContainer/back")
+"创建新世界" = NodePath("VBoxContainer/HBoxContainer/newgame")
+
+[node name="Panel" type="Panel" parent="." unique_id=379058616]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tyet3")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=449351261]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -194.0
+offset_top = -33.0
+offset_right = 194.0
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="世界种子" type="HBoxContainer" parent="VBoxContainer" unique_id=1838259600]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/世界种子" unique_id=2091757677]
+layout_mode = 2
+text = "世界种子"
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/世界种子" unique_id=1767963594]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+
+[node name="世界名称" type="HBoxContainer" parent="VBoxContainer" unique_id=2120332991]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/世界名称" unique_id=2098191494]
+layout_mode = 2
+text = "世界名称"
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/世界名称" unique_id=736905323]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=2065873466]
+layout_direction = 3
+layout_mode = 2
+
+[node name="back" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=237096261]
+layout_mode = 2
+text = "返回
+"
+
+[node name="newgame" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1242580943]
+layout_mode = 2
+text = "创建新世界"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/newgame" to="." method="_on_newgame_pressed"]

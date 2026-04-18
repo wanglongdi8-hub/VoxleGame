@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://brvxdkmkiekou"]
+
+[ext_resource type="Script" uid="uid://1ioib2k6abul" path="res://Script/GUI/HUD/VoxelHUD.cs" id="1_um3gd"]
+
+[node name="VoxelHud" type="Control" unique_id=1718586080 node_paths=PackedStringArray("帧率")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_um3gd")
+"帧率" = NodePath("fps")
+
+[node name="fps" type="Label" parent="." unique_id=2126060820]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "测试"

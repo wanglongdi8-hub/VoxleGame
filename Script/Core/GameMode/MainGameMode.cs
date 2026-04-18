@@ -1,16 +1,14 @@
 using Godot;
 using System;
 
-public partial class StartGameMode : GameModeBase
+public partial class MainGameMode : GameModeBase
 {
 	public override void _Ready()
 	{
-
-		GUIManager.OpenView("StartMenu");
+		GUIManager.OpenView("HUD");
 	}
-	
+
 	public override void _Process(double delta)
 	{
 	}
-
 }

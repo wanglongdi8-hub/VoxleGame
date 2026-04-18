@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b7wfgv24wojve"]
+
+[ext_resource type="Script" uid="uid://3cigschqwo5s" path="res://Script/Core/GUI/GUIViewManager.cs" id="1_vlju5"]
+
+[node name="MainGuiViewManager" type="Node" unique_id=1515779943]
+script = ExtResource("1_vlju5")

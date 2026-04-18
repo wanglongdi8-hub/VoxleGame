@@ -23,4 +23,9 @@ public partial class StartMenut : BaseGUIView
 	{
 		GUIManager.OpenView("SettingsMenu");
 	}
+
+	public void _on_xing_cun_dang_pressed()
+	{
+		GUIManager.OpenView("NewGameMenu");
+	}
 }
