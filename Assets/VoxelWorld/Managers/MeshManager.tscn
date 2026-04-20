@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dqsbs2iwaq5lv"]
+
+[ext_resource type="Script" uid="uid://drtshoew8gx4u" path="res://Script/VoxelWorld/Managers/MeshManager.cs" id="1_keyl3"]
+
+[node name="MeshManager" type="Node" unique_id=1440899250]
+script = ExtResource("1_keyl3")

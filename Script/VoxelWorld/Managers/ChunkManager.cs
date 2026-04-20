@@ -7,34 +7,36 @@ using System.Threading.Tasks;
 
 public partial class ChunkManager : Node
 {
-    
-    private Vector2I 当前中心区块 = Vector2I.Zero;
-    private int 当前视距 = 1;
+    public VoxelWorld voxelWorld {get; set;}
     private bool 是否需要重新计算需要加载的地形 = false;
-    private Vector2I 上一次玩家所在地形块 = Vector2I.Zero;
     
-    private VoxelWorld _voxelWorld;
-
-    /*****************        区块实例         ***********************/
     private Dictionary<Vector3I, ChunkInstance> ChunkInstanceDict  = [];
+
     private HashSet<Vector3> 已实例化的区块 = [];
     private HashSet<Vector2I> 已实例化的地形柱 = [];
     private Dictionary<Vector2I,Vector3I[]> 一个地形柱中的区块索引 = [];
     private Vector2I[]  上次加载的地形坐标 = [];
+    private Vector2I 上一次玩家所在地形块 = Vector2I.Zero;
+
     // 队列
     private Queue<Vector2I> 待生成地形区块 = [];
+    private Queue<Vector3I> 待渲染区块 = [];
     private Queue<Vector3I> 已生成待实例化区块 = [];
+    private Queue<Vector3I> 待取消实例化区块 = [];
     private Queue<Vector2I> 待删除地形区块 = [];
 
-    /*****************        区块实例          **********************/
+
+    // 只有需要模拟的区块才实例化。实例化重用，不重复创建。
+    // 改为 所有需要渲染的区块都由 渲染管理器负责渲染。
+    // 再创建一个碰撞管理器
+
 
     
     public override void _Ready()
     {
-        _voxelWorld = GetParent<VoxelWorld>();
-        _voxelWorld.玩家移动到新区块 += 控制重新计算要加载的地形;
-        _voxelWorld.视距变化 += 清空队列;
-        _voxelWorld.视距变化 += 视距变化计算地形加载;
+        voxelWorld.玩家移动到新区块 += 控制重新计算要加载的地形;
+        voxelWorld.视距变化 += 清空队列;
+        voxelWorld.视距变化 += 视距变化计算地形加载;
     }
 
 
@@ -42,25 +44,21 @@ public partial class ChunkManager : Node
     {
         if(是否需要重新计算需要加载的地形)
         {
-            计算需要加载的地形坐标(_voxelWorld.玩家所在区块);
+            计算需要加载的地形坐标(voxelWorld.玩家所在区块);
             是否需要重新计算需要加载的地形 = false;
         }
         
-        //TODO: 添加并行处理
-        for(int i = 0; i < _voxelWorld.每帧加载地形数; i++)
-        {
-            await 生成地形并保存();
-            await 实例化区块();
-            await 取消渲染不在视距内的区块();
-        }
 
+        await 生成地形并保存();
+        await 实例化区块();
+        await 取消渲染不在视距内的区块();
     }
 
     private async Task 清空队列(Vector3I i)
     {
         待生成地形区块.Clear();
         已生成待实例化区块.Clear();
-        待删除地形区块.Clear();
+        //待删除地形区块.Clear();
     }
 
     private async Task 生成地形并保存()
@@ -68,7 +66,7 @@ public partial class ChunkManager : Node
         if(待生成地形区块.Count > 0)
         {
             var result = 待生成地形区块.Dequeue();
-            var chunks = _voxelWorld.TerrainManager.生成地形数据(result);
+            var chunks = voxelWorld.TerrainManager.生成地形数据(result);
 
             Vector3I[] chunkArr = new Vector3I[chunks.Count];
             int 索引 = 0;
@@ -76,6 +74,7 @@ public partial class ChunkManager : Node
             foreach(var (chunkPosition, chunkData) in chunks)
             {
                 ChunkInstanceDict[chunkPosition] = new ChunkInstance(chunkData);
+                chunkData.计算顶点数据();
                 已生成待实例化区块.Enqueue(chunkPosition);
                 chunkArr[索引] = chunkPosition;
                 索引++;
@@ -164,23 +163,41 @@ public partial class ChunkManager : Node
         是否需要重新计算需要加载的地形 = true;
     }
 
-
-    private void 计算需要加载的地形坐标(Vector3I PlayerChunkPos)
+    private Vector2I[] 要加载的地形坐标(Vector3I PlayerChunkPos)
     {
-        if(!是否需要重新计算需要加载的地形) return;
         是否需要重新计算需要加载的地形 = false;
-
-        // 根据玩家位置和视距计算当前需要加载的地形坐标 Vector2I
         
-        // 预计算地形数量，避免动态扩容
-        int 地形数量 = (2 * _voxelWorld.视距 + 1) * (2 * _voxelWorld.视距 + 1);
+        // 预计算地形数量
+        int 地形数量 = (2 * voxelWorld.视距 + 1) * (2 * voxelWorld.视距 + 1);
         var 当前需要加载的地形坐标 = new Vector2I[地形数量];
         int 索引 = 0;
         
         // 计算以玩家为中心，视距范围内的所有地形坐标
-        for (int dx = -_voxelWorld.视距; dx <= _voxelWorld.视距; dx++)
+        for (int dx = -voxelWorld.视距; dx <= voxelWorld.视距; dx++)
         {
-            for (int dz = -_voxelWorld.视距; dz <= _voxelWorld.视距; dz++)  
+            for (int dz = -voxelWorld.视距; dz <= voxelWorld.视距; dz++)  
+            {
+                当前需要加载的地形坐标[索引++] = new Vector2I(PlayerChunkPos.X + dx, PlayerChunkPos.Z + dz);
+            }
+        }
+        
+        // 计算需要添加和移除的地形坐标
+        return 当前需要加载的地形坐标.Except(上次加载的地形坐标).ToArray();
+    }
+
+    private void 计算需要加载的地形坐标(Vector3I PlayerChunkPos)
+    {
+        是否需要重新计算需要加载的地形 = false;
+        
+        // 预计算地形数量
+        int 地形数量 = (2 * voxelWorld.视距 + 1) * (2 * voxelWorld.视距 + 1);
+        var 当前需要加载的地形坐标 = new Vector2I[地形数量];
+        int 索引 = 0;
+        
+        // 计算以玩家为中心，视距范围内的所有地形坐标
+        for (int dx = -voxelWorld.视距; dx <= voxelWorld.视距; dx++)
+        {
+            for (int dz = -voxelWorld.视距; dz <= voxelWorld.视距; dz++)  
             {
                 当前需要加载的地形坐标[索引++] = new Vector2I(PlayerChunkPos.X + dx, PlayerChunkPos.Z + dz);
             }
@@ -189,12 +206,24 @@ public partial class ChunkManager : Node
         // 计算需要添加和移除的地形坐标
         var 需要添加的地形 = 当前需要加载的地形坐标.Except(上次加载的地形坐标).ToArray();
 
-        // 应该和已实例化的区块进行对比
+        // 应该和已实例化的区块进行对比，移除已实例化的区块
         var 地形柱 = 已实例化的地形柱.ToArray();
         var 需要移除的地形 = 地形柱.Except(当前需要加载的地形坐标).ToArray();
         
-        // 添加到待生成地形区块
-        foreach (var 地形坐标 in 需要添加的地形)
+        // 按距离排序需要添加的地形（从近到远）
+        var 排序后的添加地形 = 需要添加的地形
+            .Select(coord => new 
+            { 
+                坐标 = coord, 
+                距离平方 = Mathf.Pow(coord.X - PlayerChunkPos.X, 2) + 
+                        Mathf.Pow(coord.Y - PlayerChunkPos.Z, 2) 
+            })
+            .OrderBy(item => item.距离平方)
+            .Select(item => item.坐标)
+            .ToArray();
+        
+        // 添加到待生成地形区块（按距离从近到远）
+        foreach (var 地形坐标 in 排序后的添加地形)
         {   
             if(!一个地形柱中的区块索引.ContainsKey(地形坐标) && !待删除地形区块.Contains(地形坐标))
             {
@@ -202,8 +231,20 @@ public partial class ChunkManager : Node
             }
         }
         
-        // 添加到需要移除的地形区块
-        foreach (var 地形坐标 in 需要移除的地形)
+        // 按距离排序需要移除的地形（从远到近）
+        var 排序后的移除地形 = 需要移除的地形
+            .Select(coord => new 
+            { 
+                坐标 = coord, 
+                距离平方 = Mathf.Pow(coord.X - PlayerChunkPos.X, 2) + 
+                        Mathf.Pow(coord.Y - PlayerChunkPos.Z, 2) 
+            })
+            .OrderByDescending(item => item.距离平方)
+            .Select(item => item.坐标)
+            .ToArray();
+        
+        // 添加到需要移除的地形区块（从远到近）
+        foreach (var 地形坐标 in 排序后的移除地形)
         {
             if(一个地形柱中的区块索引.ContainsKey(地形坐标))
             {

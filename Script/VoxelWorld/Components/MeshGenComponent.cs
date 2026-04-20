@@ -120,6 +120,29 @@ public partial class MeshGenComponent : MeshInstance3D
        // AddChild(collisionComponent);
     }
 
+    public void 渲染网格(Chunk chunk)
+    {
+        var arrMesh = new ArrayMesh();
+        Godot.Collections.Array surfaceArray = [];
+        surfaceArray.Resize((int)Mesh.ArrayType.Max);
+
+        List<Vector3> verts = chunk.顶点数据.vert;
+        List<Vector2> uvs = chunk.顶点数据.uv;
+        List<Vector3> normals = chunk.顶点数据.normal;
+        List<int> indices = chunk.顶点数据.indice;
+
+        surfaceArray[(int)Mesh.ArrayType.Vertex] = verts.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.Normal] = normals.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.Index] = indices.ToArray();
+
+        arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
+
+        MaterialOverride = _blockMaterial;
+        Mesh = arrMesh;
+
+    }
+
     public void ArrayMesh渲染带材质的网格(Chunk chunk)
     {
         var arrMesh = new ArrayMesh();

@@ -3,8 +3,13 @@ using Godot;
 
 namespace GodotVoxelGame.VoxleData;
 
-class 区块顶点数据
+public class 区块顶点数据
 {
+    public List<Vector3> vert { get; set; } = [];
+    public List<Vector2> uv { get; set; } = [];
+    public List<Vector3> normal { get; set; } = [];
+    public List<int> indice { get; set; } = [];
+
     public 区块顶点数据()
     {
         vert = [];
@@ -41,9 +46,4 @@ class 区块顶点数据
         normal.Clear();
         indice.Clear();
     }
-
-    public List<Vector3> vert { get; set; } = [];
-    public List<Vector2> uv { get; set; } = [];
-    public List<Vector3> normal { get; set; } = [];
-    public List<int> indice { get; set; } = [];
 }

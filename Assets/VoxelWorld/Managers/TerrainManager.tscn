@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://drvxjs0iw4jpf"]
+
+[ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="1_bwu7x"]
+
+[node name="TerrainManager" type="Node" unique_id=1301036414]
+script = ExtResource("1_bwu7x")

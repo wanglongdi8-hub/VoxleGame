@@ -14,7 +14,7 @@ public partial class G : Node
 		Engine.MaxFps = 90;
 
 		// 从场景文件加载SceneManager
-		var sceneManagerScene = GD.Load<PackedScene>("res://Assets/Core/SceneManager.tscn");
+		var sceneManagerScene = GD.Load<PackedScene>("uid://c5untc3v8c568");
 		if(sceneManagerScene != null)
 		{
 			场景管理器 = sceneManagerScene.Instantiate<SceneManager>();

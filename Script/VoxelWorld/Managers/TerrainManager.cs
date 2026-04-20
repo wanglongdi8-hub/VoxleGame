@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public partial class TerrainManager : Node
 {
-    private VoxelWorld _voxelWorld;
+    public VoxelWorld voxelWorld {get; set;}
     
     [ExportGroup("噪声设置")]
     //控制噪声的频率。较小的缩放值会产生更大范围的地形特征（如山脉），较大的缩放值会产生更细致的地形。
@@ -28,7 +28,7 @@ public partial class TerrainManager : Node
     [Export] public int 海平面高度 = 70;
     
     // 随机数种子
-    [Export] public int 随机种子 = 12345;
+    [Export] public int 随机种子 = 561654431;
     
     // 用于存储随机值的字典
     private Dictionary<Vector3I, float> _randomCache = new Dictionary<Vector3I, float>();
@@ -455,7 +455,7 @@ public partial class TerrainManager : Node
     /*****************        初始化         **********************/
     public override void _Ready()
     {
-        _voxelWorld = GetParent<VoxelWorld>();
+        voxelWorld = GetParent<VoxelWorld>();
         初始化随机数生成器();
     }
 

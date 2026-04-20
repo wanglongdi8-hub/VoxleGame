@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://m06qjfw6w7jh"]
+
+[ext_resource type="Script" uid="uid://dfe7xpud8b0cn" path="res://Script/VoxelWorld/Managers/ChunkManager.cs" id="1_vnbq3"]
+
+[node name="ChunkManager" type="Node" unique_id=1461342823]
+script = ExtResource("1_vnbq3")

@@ -1,8 +1,4 @@
 using Godot;
-using System;
-
-// CollisionComponent.cs
-using Godot;
 using System.Collections.Generic;
 using GodotVoxelGame.VoxleData;
 

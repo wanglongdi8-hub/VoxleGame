@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 
 public partial class VoxelWorld : Node
 {
-	[ExportGroup("组件引用")]
-    [Export]public Node3D PlayerPivot{get; set;}
+    public ChunkManager ChunkManager{get; private set;}
+    public TerrainManager TerrainManager{get; private set;}
+    public MeshManager MeshManager{get; private set;}
     
-    // 运行时获取的组件引用
-    [Export]public ChunkManager ChunkManager{get; private set;}
-    [Export]public TerrainManager TerrainManager{get; private set;}
-    
-    [ExportGroup("区块管理器")] 
-    [Export]public Vector3I 区块加载范围{get; set;} = new (1, 1, 1);
+
     [Export]public int 视距{get; set;} = 1;
     public int 旧视距{get; set;} = 0;
-    [Export]public int 每帧加载地形数{get; set;} = 3;
+
+    [Export]public int 需要实例化的视距{get; set;} = 1;
+    public int 旧需要实例化的视距{get; set;} = 0;
+    
+    [Export]public int 每帧加载地形数{get; set;} = 1;
+    public Player 玩家引用{get; set;}
     public Vector3I 玩家所在区块{get; set;}
 	public Vector3I 上一次玩家所在区块{get;set;}
     
@@ -51,6 +52,8 @@ public partial class VoxelWorld : Node
 
         G.Instance.AtlasConfig = AtlasConfig;
         G.Instance.启用面剔除 = 启用面剔除;
+
+        初始化管理器();
        
     }
 
@@ -60,29 +63,58 @@ public partial class VoxelWorld : Node
         视距是否变化();
     }
 
+    private void 初始化管理器()
+    {
+        // 区块管理器
+        var ChunkPackedScene = GD.Load<PackedScene>("uid://m06qjfw6w7jh");
+        if(ChunkPackedScene != null)
+		{
+			ChunkManager = ChunkPackedScene.Instantiate<ChunkManager>();
+            
+            ChunkManager.voxelWorld = this;
+	
+			AddChild(ChunkManager);
+		}
+
+        // 地形管理器
+        var TerrainPackedScene = GD.Load<PackedScene>("uid://drvxjs0iw4jpf");
+        if(TerrainPackedScene != null)
+		{
+			TerrainManager = TerrainPackedScene.Instantiate<TerrainManager>();
+
+            TerrainManager.voxelWorld = this;
+	
+			AddChild(TerrainManager);
+		}
+
+        // 网格管理器   
+        var MeshPackedScene = GD.Load<PackedScene>("uid://dqsbs2iwaq5lv");
+        if(MeshPackedScene != null)
+		{
+			MeshManager = MeshPackedScene.Instantiate<MeshManager>();
+
+            MeshManager.voxelWorld = this;
+	
+			AddChild(MeshManager);
+		}
+    }
+
+
     private void 更新玩家所在区块()
     {
-		if(PlayerPivot != null)
-		{
-			玩家所在区块 = new Vector3I(
-			Mathf.FloorToInt(PlayerPivot.GlobalPosition.X / VoxelConst.CHUNK_SIZE_X),
-			Mathf.FloorToInt(PlayerPivot.GlobalPosition.Y / VoxelConst.CHUNK_SIZE_Y),
-			Mathf.FloorToInt(PlayerPivot.GlobalPosition.Z / VoxelConst.CHUNK_SIZE_Z)
-			);
-			if(上一次玩家所在区块 != 玩家所在区块)
-			{
-				玩家移动到新区块?.Invoke(玩家所在区块);
-			}
-            
-			上一次玩家所在区块 = 玩家所在区块;
 
-		}
-        else
+		玩家所在区块 = new Vector3I(
+		Mathf.FloorToInt(玩家引用.GlobalPosition.X / VoxelConst.CHUNK_SIZE_X),
+		Mathf.FloorToInt(玩家引用.GlobalPosition.Y / VoxelConst.CHUNK_SIZE_Y),
+		Mathf.FloorToInt(玩家引用.GlobalPosition.Z / VoxelConst.CHUNK_SIZE_Z)
+		);
+		if(上一次玩家所在区块 != 玩家所在区块)
 		{
-			玩家所在区块 = new(0,0,0);
-			上一次玩家所在区块 = 玩家所在区块;
 			玩家移动到新区块?.Invoke(玩家所在区块);
 		}
+            
+		上一次玩家所在区块 = 玩家所在区块;
+
     }
 
     private void 视距是否变化()

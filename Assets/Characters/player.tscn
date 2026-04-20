@@ -18,6 +18,7 @@ MoveComponent = NodePath("MoveComponent")
 AttributeComponent = NodePath("AttributeCompon")
 FlyComponent = NodePath("FlyComponent")
 CameraComponent = NodePath("CamerPivot/SpringArm3D/CameraComponent")
+"摄像机角度限制" = 90
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=651188313]
 shape = SubResource("CapsuleShape3D_ywxx0")
