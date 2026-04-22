@@ -6,7 +6,6 @@ using System.ComponentModel;
 public partial class ChunkInstance : Node
 {
 	public Chunk chunkData { get;  set; }
-	public MeshGenComponent meshComponent { get; set; }
 
 	public ChunkInstance(Chunk chunkData)
 	{
@@ -15,26 +14,7 @@ public partial class ChunkInstance : Node
 	
 	public override void _Ready()
 	{
-		ComponentInit();
-		渲染网格();
+
 	}
-
-    public void 渲染网格()
-    {
-        meshComponent.渲染网格(chunkData);
-    }
-
-	public void 清空网格()
-    {
-        meshComponent.清空网格();
-    }
-
-
-    private void ComponentInit()
-    {
-        meshComponent = new MeshGenComponent();
-        
-        AddChild(meshComponent);
-    }
 
 }

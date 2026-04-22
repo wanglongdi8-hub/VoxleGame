@@ -7,12 +7,12 @@ public partial class VoxelWorld : Node
     public ChunkManager ChunkManager{get; private set;}
     public TerrainManager TerrainManager{get; private set;}
     public MeshManager MeshManager{get; private set;}
-    
+    public CollisionManager CollisionManager {get; private set;}
 
-    [Export]public int 视距{get; set;} = 1;
+    [Export]public int 视距{get; set;} = 10;
     public int 旧视距{get; set;} = 0;
 
-    [Export]public int 需要实例化的视距{get; set;} = 1;
+    [Export]public int 需要实例化的视距{get; set;} = 2;
     public int 旧需要实例化的视距{get; set;} = 0;
     
     [Export]public int 每帧加载地形数{get; set;} = 1;
