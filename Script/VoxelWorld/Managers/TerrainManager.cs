@@ -189,12 +189,14 @@ public partial class TerrainManager : Node
                 if (!chunkDic.ContainsKey(newChunkPos))
                 {
                     Chunk newChunk = new Chunk(newChunkPos);
-                    newChunk.SetVoxel(x, localY, z, 获取体素类型(height, worldX, worldZ, (int)height));
+                    //newChunk.SetVoxel(x, localY, z, 获取体素类型(height, worldX, worldZ, (int)height));
+                    newChunk.SetVoxel(x, localY, z, 1);
                     chunkDic.Add(newChunkPos, newChunk);
                 }
                 else
                 {
-                    chunkDic[newChunkPos].SetVoxel(x, localY, z, 获取体素类型(height, worldX, worldZ, (int)height));
+                    //chunkDic[newChunkPos].SetVoxel(x, localY, z, 获取体素类型(height, worldX, worldZ, (int)height));
+                    chunkDic[newChunkPos].SetVoxel(x, localY, z, 1);
                 }
                 
                 // 填充地表以下的体素

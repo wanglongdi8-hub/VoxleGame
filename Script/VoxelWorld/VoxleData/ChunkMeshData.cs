@@ -3,7 +3,7 @@ using Godot;
 
 namespace GodotVoxelGame.VoxleData;
 
-class 区块顶点数据
+public class 区块顶点数据
 {
     public 区块顶点数据()
     {

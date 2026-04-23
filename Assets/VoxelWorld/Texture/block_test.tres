@@ -1,6 +1,7 @@
 [gd_resource type="StandardMaterial3D" format=3 uid="uid://bnhs4vt7cdei"]
 
-[ext_resource type="Texture2D" uid="uid://d3f34krqfgdjd" path="res://Assets/VoxelWorld/Texture/texture_sheet.png" id="1_buctp"]
+[ext_resource type="Texture2D" uid="uid://mqw6v5f1myqe" path="res://Assets/VoxelWorld/Texture/texture_sheet.png" id="1_buctp"]
 
 [resource]
 albedo_texture = ExtResource("1_buctp")
+texture_filter = 4

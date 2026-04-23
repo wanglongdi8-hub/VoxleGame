@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dmhrk7wuw6psw" path="res://Script/VoxelWorld/VoxelWorld.cs" id="1_6nr47"]
 [ext_resource type="Script" uid="uid://dfe7xpud8b0cn" path="res://Script/VoxelWorld/Managers/ChunkManager.cs" id="2_1dk62"]
+[ext_resource type="Material" uid="uid://bnhs4vt7cdei" path="res://Assets/VoxelWorld/Texture/block_test.tres" id="3_u6ord"]
 [ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="4_c7rf8"]
 
 [node name="VoxleWorld" type="Node3D" unique_id=1811242917 node_paths=PackedStringArray("ChunkManager", "TerrainManager")]
@@ -12,6 +13,7 @@ TerrainManager = NodePath("TerrainManager")
 
 [node name="ChunkManager" type="Node3D" parent="." unique_id=75440593]
 script = ExtResource("2_1dk62")
+Material = ExtResource("3_u6ord")
 
 [node name="TerrainManager" type="Node3D" parent="." unique_id=1129591728]
 script = ExtResource("4_c7rf8")
