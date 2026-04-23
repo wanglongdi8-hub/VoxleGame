@@ -73,7 +73,6 @@ public partial class CollisionComponent : Node
         
         _isInitialized = true;
         
-        GD.Print($"[VoxelCollisionComponent] 碰撞组件初始化完成，使用 {(使用凸包简化 ? "凸多边形" : "凹多边形")} 形状");
     }
     
     /// <summary>
@@ -334,7 +333,7 @@ public partial class CollisionComponent : Node
             simplified.Add(points[index]);
         }
         
-        GD.Print($"[VoxelCollisionComponent] 点集简化: {points.Count} -> {simplified.Count}");
+        // GD.Print($"[VoxelCollisionComponent] 点集简化: {points.Count} -> {simplified.Count}");
         return simplified;
     }
     
@@ -481,7 +480,7 @@ public partial class CollisionComponent : Node
         ulong endTime = Time.GetTicksMsec();
         if (成功)
         {
-            GD.Print($"[VoxelCollisionComponent] 批量更新完成，总耗时: {endTime - startTime}ms");
+            // GD.Print($"[VoxelCollisionComponent] 批量更新完成，总耗时: {endTime - startTime}ms");
         }
     }
 }

@@ -5,9 +5,7 @@ public partial class G : Node
 {
 	public static G Instance { get; private set; }
     private SceneManager 场景管理器 {get; set;}
-    public BlockAtlasConfig AtlasConfig { get; set; }
-	public bool 启用面剔除 { get; set; } = true;
-
+	
 	public override void _Ready()
     {
         Instance = this;

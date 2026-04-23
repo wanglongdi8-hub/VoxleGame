@@ -20,12 +20,4 @@ metadata/_custom_type_script = "uid://beggfo46hgu62"
 [node name="StartGuiViewManager" type="Node" unique_id=1544276530 node_paths=PackedStringArray("GuiRoot")]
 script = ExtResource("1_84tpr")
 ViewConfigList = Array[ExtResource("2_0evud")]([SubResource("Resource_tltll"), SubResource("Resource_7007e")])
-GuiRoot = NodePath("Control")
-
-[node name="Control" type="Control" parent="." unique_id=1275611678]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+GuiRoot = NodePath("")

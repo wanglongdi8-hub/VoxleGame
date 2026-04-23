@@ -7,9 +7,9 @@ public partial class VoxelWorld : Node
     public ChunkManager ChunkManager{get; private set;}
     public TerrainManager TerrainManager{get; private set;}
     public MeshManager MeshManager{get; private set;}
-    public CollisionManager CollisionManager {get; private set;}
+    public ColliderManager ColliderManager{get; private set;}
 
-    [Export]public int 视距{get; set;} = 10;
+    [Export]public int 视距{get; set;} = 3;
     public int 旧视距{get; set;} = 0;
 
     [Export]public int 需要实例化的视距{get; set;} = 2;
@@ -36,22 +36,12 @@ public partial class VoxelWorld : Node
     [Export] public bool 启用面剔除 { get; set; } = true;
     [Export] public bool 重新生成网格 {get; set;} = true;
     [Export] public bool 清除现有网格 {get; set;} = false;
-    
-    
-	/*****************        事件         **********************/
-	public event Func<Vector3I, Task> 玩家移动到新区块;
-    public event Func<Vector3I, Task> 视距变化;
-
-    /*****************        事件         **********************/
 
     public override void _Ready()
     {
         // 在运行时获取组件引用
         ChunkManager = GetNode<ChunkManager>("ChunkManager");
         TerrainManager = GetNode<TerrainManager>("TerrainManager");
-
-        G.Instance.AtlasConfig = AtlasConfig;
-        G.Instance.启用面剔除 = 启用面剔除;
 
         初始化管理器();
        
@@ -71,7 +61,7 @@ public partial class VoxelWorld : Node
 		{
 			ChunkManager = ChunkPackedScene.Instantiate<ChunkManager>();
             
-            ChunkManager.voxelWorld = this;
+            ChunkManager._voxelWorld = this;
 	
 			AddChild(ChunkManager);
 		}
@@ -97,8 +87,18 @@ public partial class VoxelWorld : Node
 	
 			AddChild(MeshManager);
 		}
-    }
 
+        // 碰撞体管理器
+        var ColliderPackedScene = GD.Load<PackedScene>("uid://colliderpackedscene");
+        if(ColliderPackedScene != null)
+        {
+            ColliderManager = ColliderPackedScene.Instantiate<ColliderManager>();
+
+            ColliderManager.voxelWorld = this;
+
+            AddChild(ColliderManager);
+        }
+    }
 
     private void 更新玩家所在区块()
     {
@@ -110,7 +110,7 @@ public partial class VoxelWorld : Node
 		);
 		if(上一次玩家所在区块 != 玩家所在区块)
 		{
-			玩家移动到新区块?.Invoke(玩家所在区块);
+			ChunkManager.是否需要重新计算需要加载的地形 = true;
 		}
             
 		上一次玩家所在区块 = 玩家所在区块;
@@ -121,8 +121,7 @@ public partial class VoxelWorld : Node
     {
         if(视距 != 旧视距)
         {
-            视距变化?.Invoke(玩家所在区块);
-            玩家移动到新区块?.Invoke(玩家所在区块);
+            ChunkManager.是否需要重新计算需要加载的地形 = true;
             旧视距 = 视距;
         }
     }

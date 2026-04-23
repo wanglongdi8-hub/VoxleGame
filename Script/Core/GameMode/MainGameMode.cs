@@ -28,7 +28,7 @@ public partial class MainGameMode : GameModeBase
 		{
 			_Player = _PlayerPackedScene.Instantiate<Player>();
 			// TODO: 根据地形生成玩家位置
-			_Player.Position = new Vector3(0,100,0);
+			_Player.Position = new Vector3(0,1000,0);
 			AddChild(_Player);
 		}
 

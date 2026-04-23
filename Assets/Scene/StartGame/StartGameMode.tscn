@@ -1,26 +1,6 @@
 [gd_scene format=3 uid="uid://cutc5f10wybqy"]
 
 [ext_resource type="Script" uid="uid://drqchljsm4ld4" path="res://Script/Core/GameMode/GameModeBase.cs" id="1_nngvy"]
-[ext_resource type="PackedScene" uid="uid://crp0bos7cdug7" path="res://Assets/Scene/StartGame/StartGUIViewManager.tscn" id="2_ly07a"]
-[ext_resource type="Script" uid="uid://beggfo46hgu62" path="res://Script/Core/GUI/GUIViewConfig.cs" id="3_0h33q"]
-[ext_resource type="PackedScene" uid="uid://sv0tjp3sj0bo" path="res://Assets/GUI/StartMenu/StartMenu.tscn" id="4_5jkhw"]
-[ext_resource type="PackedScene" uid="uid://g522bcp5vjm0" path="res://Assets/GUI/SettingsMenu/SettingsMenu.tscn" id="5_5jkhw"]
 
-[sub_resource type="Resource" id="Resource_ki52y"]
-script = ExtResource("3_0h33q")
-Id = &"StartMenu"
-Prefab = ExtResource("4_5jkhw")
-metadata/_custom_type_script = "uid://beggfo46hgu62"
-
-[sub_resource type="Resource" id="Resource_0i056"]
-script = ExtResource("3_0h33q")
-Id = &"SettingsMenu"
-Prefab = ExtResource("5_5jkhw")
-metadata/_custom_type_script = "uid://beggfo46hgu62"
-
-[node name="StartGameMode" type="Node" unique_id=2022293973 node_paths=PackedStringArray("GUIManager")]
+[node name="StartGameMode" type="Node" unique_id=2022293973]
 script = ExtResource("1_nngvy")
-GUIManager = NodePath("StartGuiViewManager")
-
-[node name="StartGuiViewManager" parent="." unique_id=1544276530 instance=ExtResource("2_ly07a")]
-ViewConfigList = Array[ExtResource("3_0h33q")]([SubResource("Resource_ki52y"), SubResource("Resource_0i056")])

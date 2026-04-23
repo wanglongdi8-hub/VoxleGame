@@ -4,10 +4,10 @@
 [ext_resource type="Script" uid="uid://dfe7xpud8b0cn" path="res://Script/VoxelWorld/Managers/ChunkManager.cs" id="2_1dk62"]
 [ext_resource type="Script" uid="uid://bs38o5w0qd2jc" path="res://Script/VoxelWorld/Managers/TerrainManager.cs" id="4_c7rf8"]
 
-[node name="VoxleWorld" type="Node3D" unique_id=1811242917 node_paths=PackedStringArray("ChunkManager", "TerrainManager")]
+[node name="VoxleWorld" type="Node3D" unique_id=1811242917]
 script = ExtResource("1_6nr47")
-ChunkManager = NodePath("ChunkManager")
-TerrainManager = NodePath("TerrainManager")
+"视距" = 1
+"需要实例化的视距" = 1
 "重新生成网格" = false
 
 [node name="ChunkManager" type="Node3D" parent="." unique_id=75440593]

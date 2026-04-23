@@ -157,7 +157,7 @@ public class Chunk
     };
 
 
-    public void 计算顶点数据()
+    private void 计算顶点数据()
     {
         List<Vector3> verts = [];
         List<Vector2> uvs = [];
@@ -253,6 +253,9 @@ public class Chunk
         顶点数据.uv = uvs;
         顶点数据.indice = indices;
         顶点数据.normal = normals;
+        
+        // 生成碰撞数据
+        生成碰撞数据();
     }
 
     private Vector3[] 计算方块顶点(Vector3I blockPosition)
@@ -298,7 +301,7 @@ public class Chunk
         if (!blockTextureConfigs.ContainsKey(blockId))
         {
             // 如果方块没有配置，使用默认方块ID
-            GD.Print($"方块ID {blockId} 没有配置UV");
+            // GD.Print($"方块ID {blockId} 没有配置UV");
         }
         
         var config = blockTextureConfigs[blockId];
@@ -383,6 +386,39 @@ public class Chunk
     }
 
     // 碰撞数据 *****************************************************************************
+    public void 生成碰撞数据()
+    {
+        if (顶点数据.indice.Count == 0)
+        {
+            碰撞数据.Data = new Vector3[0];
+            return;
+        }
+        
+        List<Vector3> collisionFaces = new List<Vector3>();
+        
+        for (int i = 0; i < 顶点数据.indice.Count; i += 3)
+        {
+            int idx1 = 顶点数据.indice[i];
+            int idx2 = 顶点数据.indice[i + 1];
+            int idx3 = 顶点数据.indice[i + 2];
+            
+            if (idx1 < 顶点数据.vert.Count && 
+                idx2 < 顶点数据.vert.Count && 
+                idx3 < 顶点数据.vert.Count)
+            {
+                Vector3 v1 = 顶点数据.vert[idx1];
+                Vector3 v2 = 顶点数据.vert[idx2];
+                Vector3 v3 = 顶点数据.vert[idx3];
+
+                collisionFaces.Add(v1);
+                collisionFaces.Add(v2);
+                collisionFaces.Add(v3);
+            }
+        }
+        
+        碰撞数据.Data = collisionFaces.ToArray();
+    }
+    
     private void 生成碰撞面数组(区块顶点数据 meshData, out int 三角形数量)
     {
         三角形数量 = 0;

@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://dqsbs2iwaq5lv"]
 
 [ext_resource type="Script" uid="uid://drtshoew8gx4u" path="res://Script/VoxelWorld/Managers/MeshManager.cs" id="1_keyl3"]
+[ext_resource type="Material" uid="uid://bnhs4vt7cdei" path="res://Assets/VoxelWorld/Texture/block_test.tres" id="2_ss0bp"]
 
 [node name="MeshManager" type="Node" unique_id=1440899250]
 script = ExtResource("1_keyl3")
+material = ExtResource("2_ss0bp")
